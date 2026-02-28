@@ -4,8 +4,6 @@ try:
 except:
     from PySide2 import QtWidgets, QtCore
     from PySide2.QtCore import Signal
-import sys
-
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 
