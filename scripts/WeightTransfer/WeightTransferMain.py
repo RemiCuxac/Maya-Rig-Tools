@@ -4,6 +4,8 @@ try:
 except:
     from PySide2 import QtWidgets, QtCore
     from PySide2.QtCore import Signal
+import sys
+
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 
@@ -50,7 +52,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
 class WeightTransferModel:
     def __init__(self):
         self.weight: dict = {}
-        self.bs_index_map: dict = {}
+        self.bs_index_map: dict[str, str] = {}
         self.deform_node: str = None
         self.vertex_count: int = 0
         self.geo: str = None
@@ -131,7 +133,6 @@ class WeightTransferModel:
             default: list[str] = ["Envelope", ".inputTarget[0].baseWeights[*]"]
             alias_list = default if selected_attrs == ["en"] else alias_list + default
         
-        self.bs_index_map: dict[str, str] = {}
         for idx in range(0, len(alias_list), 2):
             alias: str = str(alias_list[idx])
             raw_path: str = str(alias_list[idx + 1])
@@ -209,7 +210,7 @@ class WeightTransferPresenter:
 
 
 if __name__ == "__main__":
-    # app = QtWidgets.QApplication(sys.argv)
+    # app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
     model = WeightTransferModel()
     view = WeightTransferInterface()
     presenter = WeightTransferPresenter(model, view)
