@@ -325,7 +325,6 @@ class WeightTransferPresenter:
         self.view.get_data_component.connect(self._on_ask_component)
 
     def _on_transfer_emit(self, source: Component, target: Component, operationType: OperationType):
-        print("hey")
         self.model.hold_undo()
         if not source.object and not target.object:
             self.view.statusBar().showMessage("Please provide at least a source.", 5000)
