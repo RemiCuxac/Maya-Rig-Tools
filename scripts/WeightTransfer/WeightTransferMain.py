@@ -13,7 +13,7 @@ import maya.api.OpenMaya as om
 
 @dataclass
 class OperationType:
-    none: bool = False
+    copy: bool = False
     flip: bool = False
     mirror: bool = False
     invert: bool = False
@@ -100,7 +100,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
     def create_layout(self):
         self.setCentralWidget(QtWidgets.QWidget())
         self.qvl_layout = QtWidgets.QVBoxLayout()
-        self.qrb_none = QtWidgets.QRadioButton("None")
+        self.qrb_copy = QtWidgets.QRadioButton("Copy")
         self.qrb_flip = QtWidgets.QRadioButton("Flip")
         self.qrb_flip.setChecked(True)
         self.qrb_mirror = QtWidgets.QRadioButton("Mirror")
@@ -108,7 +108,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
         self.qpb_transfer = QtWidgets.QPushButton("Transfer")
         self.qcb_axis = QtWidgets.QComboBox()
         self.qcb_axis.addItems(["x", "y", "z"])
-        self.qvl_layout.addWidget(self.qrb_none)
+        self.qvl_layout.addWidget(self.qrb_copy)
         self.qvl_layout.addWidget(self.qrb_flip)
         self.qvl_layout.addWidget(self.qrb_mirror)
         self.qvl_layout.addWidget(self.qrb_invert)
@@ -151,7 +151,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
 
     def _get_operation(self):
         operation = OperationType()
-        operation.none = self.qrb_none.isChecked()
+        operation.copy = self.qrb_copy.isChecked()
         operation.flip = self.qrb_flip.isChecked()
         operation.mirror = self.qrb_mirror.isChecked()
         operation.invert = self.qrb_invert.isChecked()
@@ -330,7 +330,7 @@ class WeightTransferPresenter:
             self.view.statusBar().showMessage("Please provide at least a source.", 5000)
         if source.vertex_count != target.vertex_count:
             self.view.statusBar().showMessage("Topology mismatch: Vertex counts /ID do not match.", 5000)
-        if operationType.none:
+        if operationType.copy:
             self.model.transfer_weights(source, target, operationType)
         if operationType.flip:
             self.model.flip_weights(source, target, operationType)
