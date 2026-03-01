@@ -1,4 +1,5 @@
-import dataclasses
+from dataclasses import dataclass
+from typing import Optional
 
 try:
     from PySide6 import QtWidgets, QtCore
@@ -10,19 +11,31 @@ import maya.cmds as cmds
 import maya.api.OpenMaya as om
 
 
-@dataclasses.dataclass
+@dataclass
+class OperationType:
+    none: bool = False
+    flip: bool = False
+    mirror: bool = False
+    invert: bool = False
+    axis: str = ""
+    axis_index: int = None
+
+
+@dataclass
 class Component:
-    object: str = ""  # TODO : use uuid instead of name ? or full Path ?
-    objectShape: str = ""
-    componentType: str = ""  # "source" or "target"
-    deformerList: tuple = ()
-    attrsList: tuple = ()
+    object: str = ""
+    object_shape: str = ""
+    vertex_count: int = None
+    component_type: str = ""  # "Source" or "Target"
+    deformer_dict: dict[str, dict[str, str]] = None
+    deformer_choice: str = ""
+    attr_choice: str = ""
 
 
 class ComponentWidget(QtWidgets.QGroupBox):
     def __init__(self, component_type: str):
         super().__init__(component_type)
-        self.comp = Component(componentType=component_type)
+        self.comp = Component(component_type=component_type)
         self.create_layout()
         self.connect_signals()
 
@@ -38,10 +51,16 @@ class ComponentWidget(QtWidgets.QGroupBox):
         layout.addLayout(subLayout)
         layout.addWidget(self.qcb_deformer)
         layout.addWidget(self.qcb_attrs)
+        layout.addStretch()
         self.setLayout(layout)
+        if self.comp.component_type != "Source":
+            self.setCheckable(True)
 
     def connect_signals(self):
         self.qpb_set.clicked.connect(self.fill_from_component)
+        self.qcb_deformer.currentIndexChanged.connect(self.update_deform_combobox)
+        self.qcb_attrs.currentIndexChanged.connect(self.update_attrs_combobox)
+        self.toggled.connect(self.deleteLater)
 
     def fill_from_component(self, component: Component = None):
         if not component:
@@ -49,15 +68,25 @@ class ComponentWidget(QtWidgets.QGroupBox):
         self.comp = component
         self.qlabel.setText(self.comp.object)
         self.qcb_deformer.clear()
-        self.qcb_deformer.addItems(self.comp.deformerList)
+        self.qcb_deformer.addItems(list(self.comp.deformer_dict.keys()))
+        self.update_deform_combobox()
+
+    def update_deform_combobox(self):
+        currentDeformer = self.qcb_deformer.currentText()
+        if not currentDeformer:
+            self.qcb_attrs.clear()
+            return
         self.qcb_attrs.clear()
-        self.qcb_attrs.addItems(self.comp.attrsList)
+        self.qcb_attrs.addItems(self.comp.deformer_dict[currentDeformer].keys())
+        self.comp.deformer_choice = self.qcb_deformer.currentText()
+
+    def update_attrs_combobox(self):
+        self.comp.attr_choice = self.qcb_attrs.currentText()
 
 
 class WeightTransferInterface(QtWidgets.QMainWindow):
-    states: Signal = Signal(bool, bool, bool, str)
-    geoData: Signal = Signal()
-    component: Component = Component()
+    transfer: Signal = Signal(Component, Component, OperationType)  # source component, target component, and operation
+    get_data_component: Signal = Signal(Component)
     _pending_widget: QtWidgets.QWidget = None
 
     def __init__(self):
@@ -71,6 +100,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
     def create_layout(self):
         self.setCentralWidget(QtWidgets.QWidget())
         self.qvl_layout = QtWidgets.QVBoxLayout()
+        self.qrb_none = QtWidgets.QRadioButton("None")
         self.qrb_flip = QtWidgets.QRadioButton("Flip")
         self.qrb_flip.setChecked(True)
         self.qrb_mirror = QtWidgets.QRadioButton("Mirror")
@@ -78,38 +108,55 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
         self.qpb_transfer = QtWidgets.QPushButton("Transfer")
         self.qcb_axis = QtWidgets.QComboBox()
         self.qcb_axis.addItems(["x", "y", "z"])
+        self.qvl_layout.addWidget(self.qrb_none)
         self.qvl_layout.addWidget(self.qrb_flip)
         self.qvl_layout.addWidget(self.qrb_mirror)
         self.qvl_layout.addWidget(self.qrb_invert)
         self.qvl_layout.addWidget(self.qcb_axis)
 
-        self.qpb_add_source = QtWidgets.QPushButton("+ source")
         self.qpb_add_target = QtWidgets.QPushButton("+ target")
         qhl_layout = QtWidgets.QHBoxLayout()
         self.qvl_layout_sources = QtWidgets.QVBoxLayout()
         self.qvl_layout_targets = QtWidgets.QVBoxLayout()
-        self.qvl_layout_sources.addWidget(self.qpb_add_source)
         self.qvl_layout_targets.addWidget(self.qpb_add_target)
         qhl_layout.addLayout(self.qvl_layout_sources)
         qhl_layout.addLayout(self.qvl_layout_targets)
         self.qvl_layout.addLayout(qhl_layout)
-
 
         self.qvl_layout.addStretch()
         self.qvl_layout.addWidget(self.qpb_transfer)
         self.statusBar()
         self.centralWidget().setLayout(self.qvl_layout)
 
+        self.add_source()
+
     def connect_signals(self):
         self.qpb_transfer.clicked.connect(self._on_transfer_clicked)
-        self.qpb_add_source.clicked.connect(self.add_source)
         self.qpb_add_target.clicked.connect(self.add_target)
 
     def _on_transfer_clicked(self):
-        self.states.emit(self.qrb_flip.isChecked(),
-                         self.qrb_mirror.isChecked(),
-                         self.qrb_invert.isChecked(),
-                         self.qcb_axis.currentText())
+        source = self.qvl_layout_sources.itemAt(0).widget()  # we assume source is the first widget of the layout
+        assert isinstance(source, ComponentWidget)
+        target_widgets = []
+        for i in range(self.qvl_layout_targets.count()):
+            widget = self.qvl_layout_targets.itemAt(i).widget()
+            if not isinstance(widget, ComponentWidget):
+                continue
+            target_widgets.append(widget)
+        if target_widgets:
+            for target in target_widgets:
+                self.transfer.emit(source.comp, target.comp, self._get_operation())
+        else:
+            self.transfer.emit(source.comp, source.comp, self._get_operation())
+
+    def _get_operation(self):
+        operation = OperationType()
+        operation.none = self.qrb_none.isChecked()
+        operation.flip = self.qrb_flip.isChecked()
+        operation.mirror = self.qrb_mirror.isChecked()
+        operation.invert = self.qrb_invert.isChecked()
+        operation.axis = self.qcb_axis.currentText()
+        return operation
 
     def add_source(self):
         widget = ComponentWidget("Source")
@@ -118,12 +165,13 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
 
     def add_target(self):
         widget = ComponentWidget("Target")
-        self.qvl_layout_targets.addWidget(widget)
+        self.qvl_layout_targets.insertWidget(0, widget)
         widget.qpb_set.clicked.connect(self._on_set_clicked)
 
     def _on_set_clicked(self):
         self._pending_widget: ComponentWidget = self.sender().parent()
-        self.geoData.emit()
+        component = self._pending_widget.comp
+        self.get_data_component.emit(component)
 
     def fill_component(self, component: Component):
         if self._pending_widget:
@@ -132,16 +180,6 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
 
 
 class WeightTransferModel:
-    def __init__(self):
-        self.weight: dict = {}
-        self.bs_index_map: dict[str, str] = {}
-        self.deform_node: str = None
-        self.vertex_count: int = 0
-        self.geo: str = None
-        self.points: list[om.MPoint] = None
-        self.axis: str = None
-        self.axis_index: int = None
-
     @staticmethod
     def hold_undo():
         cmds.undoInfo(openChunk=True)
@@ -149,13 +187,6 @@ class WeightTransferModel:
     @staticmethod
     def restore_undo():
         cmds.undoInfo(closeChunk=True)
-
-    def check_data(self):
-        vars = []
-        for k, v in self.__dict__.items():
-            if not k.startswith("__") and v != 0 and not callable(v):
-                vars += [True] if v else [False]
-        return True if all(vars) else False
 
     @staticmethod
     def get_orig_shape(transform: str) -> str:
@@ -165,104 +196,122 @@ class WeightTransferModel:
         return str(cmds.listRelatives(transform, shapes=True)[0])
 
     @staticmethod
-    def get_opposite_vtx_map(axis_index: int,
-                             points: list[om.MPoint],
+    def get_axis_index(axis: str):
+        return int({"x": 0, "y": 1, "z": 2}[axis.lower()])
+
+    @staticmethod
+    def get_deformer_dict(component: Component):
+        deformers = cmds.findDeformers(component.object) or []
+        deform_list = {}
+        for d in deformers:
+            if cmds.objectType(d, isType="skinCluster"):
+                continue
+            deform_list[d] = {}
+            aliases = cmds.aliasAttr(d, query=True) or ["weights", "weight[0]"]
+            for i in range(0, len(aliases), 2):
+                attrName = aliases[i]
+                attrIndex = aliases[i + 1].rstrip(']').split('[')[-1]
+                if cmds.objectType(d, isType="blendShape"):
+                    path = f"{d}.inputTarget[0].inputTargetGroup[{attrIndex}].targetWeights[*]"
+                else:
+                    path = f"{d}.weightList[{attrIndex}].weights[*]"
+                deform_list[d][attrName] = path
+        return deform_list
+
+    def get_data(self, component: Component) -> Optional[Component]:
+        component.object = str(cmds.ls(selection=True, type="transform", noIntermediate=True)[0])
+        if not component.object:
+            return None
+        component.object_shape = self.get_orig_shape(component.object)
+        component.vertex_count = cmds.polyEvaluate(component.object, vertex=True)
+        component.deformer_dict = self.get_deformer_dict(component)
+        return component
+
+    def get_points(self, component: Component):
+        sel: om.MSelectionList = om.MSelectionList()
+        sel.add(component.object_shape)
+        mesh_fn: om.MFnMesh = om.MFnMesh(sel.getDagPath(0))
+        return [(p.x, p.y, p.z, p.w) for p in mesh_fn.getPoints(om.MSpace.kObject)]
+
+    def get_weights(self, component: Component):
+        attr_path = component.deformer_dict[component.deformer_choice][component.attr_choice].replace("*", ":")
+        return cmds.getAttr(attr_path) or []
+
+    def get_opposite_vtx_map(self, axis_index: int,
+                             points: list,
                              tolerance: float = 0.001) -> dict[int, int]:
-        coords: list[tuple[float, float, float]] = [(float(p[0]), float(p[1]), float(p[2])) for p in points]
+        grid = {}
+        inv_tol = 1.0 / tolerance
+        sq_tolerance = tolerance * tolerance
+        for idx, p in enumerate(points):
+            key = (int(p[0] * inv_tol), int(p[1] * inv_tol), int(p[2] * inv_tol))
+            if key not in grid:
+                grid[key] = []
+            grid[key].append(idx)
 
-        vtx_map: dict[int, int] = {}
-        for idx, src in enumerate(coords):
-            fx: float = -src[0] if axis_index == 0 else src[0]
-            fy: float = -src[1] if axis_index == 1 else src[1]
-            fz: float = -src[2] if axis_index == 2 else src[2]
+        vtx_map = {}
+        for idx, p in enumerate(points):
+            # Calcul de la position miroir (Target)
+            tx, ty, tz = p[0], p[1], p[2]
+            if axis_index == 0:
+                tx = -tx
+            elif axis_index == 1:
+                ty = -ty
+            elif axis_index == 2:
+                tz = -tz
 
-            best_idx: int = idx
-            best_dist: float = tolerance
-
-            for other_idx, pos in enumerate(coords):
-                if other_idx == idx:
-                    continue
-                dx: float = pos[0] - fx
-                if dx < -best_dist or dx > best_dist:
-                    continue
-                dy: float = pos[1] - fy
-                if dy < -best_dist or dy > best_dist:
-                    continue
-                dz: float = pos[2] - fz
-                if dz < -best_dist or dz > best_dist:
-                    continue
-                # Safe to compute full distance only when all axes pass
-                dist: float = (dx * dx + dy * dy + dz * dz) ** 0.5
-                if dist < best_dist:
-                    best_dist = dist
-                    best_idx = other_idx
-
+            best_idx = idx
+            min_sq_dist = sq_tolerance
+            cx, cy, cz = int(tx * inv_tol), int(ty * inv_tol), int(tz * inv_tol)
+            for i in range(cx - 1, cx + 2):
+                for j in range(cy - 1, cy + 2):
+                    for k in range(cz - 1, cz + 2):
+                        neighbor_key = (i, j, k)
+                        if neighbor_key in grid:
+                            for other_idx in grid[neighbor_key]:
+                                orig = points[other_idx]
+                                dx = tx - orig[0]
+                                dy = ty - orig[1]
+                                dz = tz - orig[2]
+                                sq_dist = dx * dx + dy * dy + dz * dz
+                                if sq_dist < min_sq_dist:
+                                    if other_idx == idx:
+                                        continue
+                                    min_sq_dist = sq_dist
+                                    best_idx = other_idx
             vtx_map[idx] = best_idx
-
         return vtx_map
 
-    def get_data(self, axis: str = "x"):
-        # Map blendshape target names to their weight attribute paths
-        selected_attrs: list[str] = list(cmds.channelBox("mainChannelBox", query=True, sha=True) or [])
-        if not selected_attrs:
-            return
-        self.deform_node = str(
-            (cmds.channelBox("mainChannelBox", query=True, historyObjectList=True) or [None])[0])
-        if not self.deform_node:
-            return
-        alias_list: list[str] = list(cmds.aliasAttr(self.deform_node, query=True) or [])
-        if "en" in selected_attrs:
-            default: list[str] = ["Envelope", ".inputTarget[0].baseWeights[*]"]
-            alias_list = default if selected_attrs == ["en"] else alias_list + default
+    def transfer_weights(self, source: Component, target: Component, *args):
+        src_weights = self.get_weights(source)
+        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+        for v in range(source.vertex_count):
+            cmds.setAttr(path.replace('*', str(v)), src_weights[v])
 
-        for idx in range(0, len(alias_list), 2):
-            alias: str = str(alias_list[idx])
-            raw_path: str = str(alias_list[idx + 1])
-            if alias == "Envelope":
-                self.bs_index_map[alias] = raw_path
+    def flip_weights(self, source: Component, target: Component, operationType: OperationType) -> None:
+        points = self.get_points(source)
+        vtx_map: dict[int, int] = self.get_opposite_vtx_map(self.get_axis_index(operationType.axis), points)
+        src_weights = self.get_weights(source)
+        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+        for v in range(source.vertex_count):
+            cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
+
+    def invert_weights(self, source: Component, target: Component, *args):
+        src_weights = self.get_weights(source)
+        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+        for v in range(source.vertex_count):
+            cmds.setAttr(path.replace('*', str(v)), 1 - src_weights[v])
+
+    def mirror_weights(self, source: Component, target: Component, operationType: OperationType):
+        points = self.get_points(source)
+        vtx_map: dict[int, int] = self.get_opposite_vtx_map(self.get_axis_index(operationType.axis), points)
+        src_weights = self.get_weights(source)
+        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+        for v in range(source.vertex_count):
+            if points[v][self.get_axis_index(operationType.axis)] > 0:  # checks if x, y or z is positive
+                cmds.setAttr(path.replace('*', str(v)), src_weights[v])
             else:
-                mapped: str = f".inputTarget[0].{raw_path.replace('weight', 'inputTargetGroup')}.targetWeights[*]"
-                self.bs_index_map[alias] = mapped
-
-        self.geo: str = str(cmds.ls(sl=1, type="transform", noIntermediate=True)[0])
-        shape_node: str = self.get_orig_shape(self.geo)
-        sel: om.MSelectionList = om.MSelectionList()
-        sel.add(shape_node)
-        mesh_fn: om.MFnMesh = om.MFnMesh(sel.getDagPath(0))
-        self.points = list(mesh_fn.getPoints(om.MSpace.kObject))
-        self.vertex_count: int = int(len(self.points))
-        self.axis = axis
-        self.axis_index = int({"x": 0, "y": 1, "z": 2}[axis.lower()])
-
-        # get weights
-        self.weight = {}
-        for bs, mapped in self.bs_index_map.items():
-            self.weight[bs] = [cmds.getAttr(self.deform_node + mapped.replace("*", str(v))) for v in
-                               range(self.vertex_count)]
-
-    def flip_weights(self) -> None:
-        # Build the full opposite-vertex map once
-        vtx_map: dict[int, int] = self.get_opposite_vtx_map(self.axis_index, self.points)
-        for bs, weights in self.weight.items():
-            path: str = self.bs_index_map[bs]
-            for v in range(self.vertex_count):
-                cmds.setAttr(
-                    f"{self.deform_node}{path.replace('*', str(v))}",
-                    weights[vtx_map[v]])
-
-    def invert_weights(self):
-        for bs, weights in self.weight.items():
-            for v in range(self.vertex_count):
-                cmds.setAttr(self.deform_node + self.bs_index_map[bs].replace("*", str(v)), 1 - self.weight[bs][v])
-
-    def mirror_weights(self):
-        vtx_map: dict[int, int] = self.get_opposite_vtx_map(self.axis_index, self.points)
-        for bs, weights in self.weight.items():
-            for v in range(self.vertex_count):
-                if self.points[v][self.axis_index] > 0:
-                    cmds.setAttr(self.deform_node + self.bs_index_map[bs].replace("*", str(v)), self.weight[bs][v])
-                else:
-                    cmds.setAttr(self.deform_node + self.bs_index_map[bs].replace("*", str(v)), weights[vtx_map[v]])
+                cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
 
 
 class WeightTransferPresenter:
@@ -271,28 +320,26 @@ class WeightTransferPresenter:
     def __init__(self, model: WeightTransferModel, view: WeightTransferInterface):
         self.model = model
         self.view = view
-        self.view.states.connect(self._on_transfer_emit)
-        self.view.geoData.connect(self._on_ask_component)
+        self.view.transfer.connect(self._on_transfer_emit)
+        self.view.get_data_component.connect(self._on_ask_component)
 
-    def _on_transfer_emit(self, flip, mirror, invert, axis):
-        self.model.get_data(axis)
-        if not self.model.check_data():
-            self.view.statusBar().showMessage("Select a property in the Channel Box", 5000)
-            return
-
+    def _on_transfer_emit(self, source: Component, target: Component, operationType: OperationType):
         self.model.hold_undo()
-        result = []
-        if flip:
-            result.append(self.model.flip_weights())
-        if mirror:
-            result.append(self.model.mirror_weights())
-        if invert:
-            result.append(self.model.invert_weights())
+        assert source.vertex_count == target.vertex_count, "Vertex count differs. Please use same vertex count / ID."
+        if operationType.none:
+            self.model.transfer_weights(source, target, operationType)
+        if operationType.flip:
+            self.model.flip_weights(source, target, operationType)
+        if operationType.mirror:
+            self.model.mirror_weights(source, target, operationType)
+        if operationType.invert:
+            self.model.invert_weights(source, target, operationType)
         self.model.restore_undo()
         self.view.statusBar().showMessage("Done !", 2000)
 
-    def _on_ask_component(self):
-        self.view.fill_component(Component("MyCube1", "MyCubeShape1", "source", ("blendshape1",), ("myAttr1",)))
+    def _on_ask_component(self, component: Component):
+        component = self.model.get_data(component)
+        self.view.fill_component(component)
 
 
 if __name__ == "__main__":
@@ -301,6 +348,3 @@ if __name__ == "__main__":
     view = WeightTransferInterface()
     presenter = WeightTransferPresenter(model, view)
     view.show()
-    # sys.exit(app.exec())
-
-# TODO: add Source and Target widgets
