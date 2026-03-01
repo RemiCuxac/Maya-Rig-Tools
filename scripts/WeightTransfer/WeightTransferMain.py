@@ -4,7 +4,7 @@ from typing import Optional
 try:
     from PySide6 import QtWidgets, QtCore
     from PySide6 import pyqtSignal as Signal
-except:
+except ModuleNotFoundError:
     from PySide2 import QtWidgets, QtCore
     from PySide2.QtCore import Signal
 import maya.cmds as cmds
@@ -86,18 +86,18 @@ class ComponentWidget(QtWidgets.QGroupBox):
 
 class WeightTransferInterface(QtWidgets.QMainWindow):
     transfer: Signal = Signal(Component, Component, OperationType)  # source component, target component, and operation
-    get_data_component: Signal = Signal(Component)
-    _pending_widget: QtWidgets.QWidget = None
+    get_component: Signal = Signal(Component)
 
     def __init__(self):
         super().__init__()
         self.setWindowTitle("WeightTransfer")
         self.resize(250, 100)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-        self.create_layout()
-        self.connect_signals()
+        self._create_layout()
+        self._connect_signals()
+        self._pending_widget: Optional[ComponentWidget] = None
 
-    def create_layout(self):
+    def _create_layout(self):
         self.setCentralWidget(QtWidgets.QWidget())
         self.qvl_layout = QtWidgets.QVBoxLayout()
         self.qrb_copy = QtWidgets.QRadioButton("Copy")
@@ -128,11 +128,11 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
         self.statusBar()
         self.centralWidget().setLayout(self.qvl_layout)
 
-        self.add_source()
+        self._add_source()
 
-    def connect_signals(self):
+    def _connect_signals(self):
         self.qpb_transfer.clicked.connect(self._on_transfer_clicked)
-        self.qpb_add_target.clicked.connect(self.add_target)
+        self.qpb_add_target.clicked.connect(self._add_target)
 
     def _on_transfer_clicked(self):
         source = self.qvl_layout_sources.itemAt(0).widget()  # we assume source is the first widget of the layout
@@ -158,20 +158,21 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
         operation.axis = self.qcb_axis.currentText()
         return operation
 
-    def add_source(self):
+    def _add_source(self):
         widget = ComponentWidget("Source")
         self.qvl_layout_sources.addWidget(widget)
         widget.qpb_set.clicked.connect(self._on_set_clicked)
 
-    def add_target(self):
+    def _add_target(self):
         widget = ComponentWidget("Target")
         self.qvl_layout_targets.insertWidget(0, widget)
         widget.qpb_set.clicked.connect(self._on_set_clicked)
 
     def _on_set_clicked(self):
-        self._pending_widget: ComponentWidget = self.sender().parent()
+        self._pending_widget = self.sender().parent()
+        assert isinstance(self._pending_widget, ComponentWidget)
         component = self._pending_widget.comp
-        self.get_data_component.emit(component)
+        self.get_component.emit(component)
 
     def fill_component(self, component: Component):
         if self._pending_widget:
@@ -218,27 +219,20 @@ class WeightTransferModel:
                 deform_list[d][attr_name] = path
         return deform_list
 
-    def get_data(self, component: Component) -> Optional[Component]:
-        selection = cmds.ls(selection=True, type="transform", noIntermediate=True)
-        component.object = selection[0] if selection else None
-        if not component.object:
-            return None
-        component.object_shape = self.get_orig_shape(component.object)
-        component.vertex_count = cmds.polyEvaluate(component.object, vertex=True)
-        component.deformer_dict = self.get_deformer_dict(component)
-        return component
-
-    def get_points(self, component: Component):
+    @staticmethod
+    def get_points(component: Component):
         sel: om.MSelectionList = om.MSelectionList()
         sel.add(component.object_shape)
         mesh_fn: om.MFnMesh = om.MFnMesh(sel.getDagPath(0))
         return [(p.x, p.y, p.z, p.w) for p in mesh_fn.getPoints(om.MSpace.kObject)]
 
-    def get_weights(self, component: Component):
+    @staticmethod
+    def get_weights(component: Component) -> list:
         attr_path = component.deformer_dict[component.deformer_choice][component.attr_choice].replace("*", ":")
         return cmds.getAttr(attr_path) or []
 
-    def get_opposite_vtx_map(self, axis_index: int,
+    @staticmethod
+    def get_opposite_vtx_map(axis_index: int,
                              points: list,
                              tolerance: float = 0.001) -> dict[int, int]:
         grid = {}
@@ -252,7 +246,6 @@ class WeightTransferModel:
 
         vtx_map = {}
         for idx, p in enumerate(points):
-            # Calcul de la position miroir (Target)
             tx, ty, tz = p[0], p[1], p[2]
             if axis_index == 0:
                 tx = -tx
@@ -283,61 +276,69 @@ class WeightTransferModel:
             vtx_map[idx] = best_idx
         return vtx_map
 
-    def transfer_weights(self, source: Component, target: Component, *args):
+    def get_data(self, component: Component) -> Optional[Component]:
+        selection = cmds.ls(selection=True, type="transform", noIntermediate=True)
+        component.object = selection[0] if selection else None
+        if not component.object:
+            return None
+        component.object_shape = self.get_orig_shape(component.object)
+        component.vertex_count = cmds.polyEvaluate(component.object, vertex=True)
+        component.deformer_dict = self.get_deformer_dict(component)
+        return component
+
+    def transfer_weights(self, source: Component, target: Component):
         src_weights = self.get_weights(source)
         path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
         for v in range(source.vertex_count):
             cmds.setAttr(path.replace('*', str(v)), src_weights[v])
 
-    def flip_weights(self, source: Component, target: Component, operationType: OperationType) -> None:
+    def flip_weights(self, source: Component, target: Component, operation_type: OperationType) -> None:
         points = self.get_points(source)
-        vtx_map: dict[int, int] = self.get_opposite_vtx_map(self.get_axis_index(operationType.axis), points)
+        vtx_map = self.get_opposite_vtx_map(self.get_axis_index(operation_type.axis), points)
         src_weights = self.get_weights(source)
         path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
         for v in range(source.vertex_count):
             cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
 
-    def invert_weights(self, source: Component, target: Component, *args):
+    def invert_weights(self, source: Component, target: Component):
         src_weights = self.get_weights(source)
         path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
         for v in range(source.vertex_count):
             cmds.setAttr(path.replace('*', str(v)), 1 - src_weights[v])
 
-    def mirror_weights(self, source: Component, target: Component, operationType: OperationType):
+    def mirror_weights(self, source: Component, target: Component, operation_type: OperationType):
         points = self.get_points(source)
-        vtx_map: dict[int, int] = self.get_opposite_vtx_map(self.get_axis_index(operationType.axis), points)
+        vtx_map = self.get_opposite_vtx_map(self.get_axis_index(operation_type.axis), points)
         src_weights = self.get_weights(source)
         path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
         for v in range(source.vertex_count):
-            if points[v][self.get_axis_index(operationType.axis)] > 0:  # checks if x, y or z is positive
+            if points[v][self.get_axis_index(operation_type.axis)] > 0:  # checks if x, y or z is positive
                 cmds.setAttr(path.replace('*', str(v)), src_weights[v])
             else:
                 cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
 
 
 class WeightTransferPresenter:
-    message = Signal(list[str])
-
     def __init__(self, model: WeightTransferModel, view: WeightTransferInterface):
         self.model = model
         self.view = view
         self.view.transfer.connect(self._on_transfer_emit)
-        self.view.get_data_component.connect(self._on_ask_component)
+        self.view.get_component.connect(self._on_ask_component)
 
-    def _on_transfer_emit(self, source: Component, target: Component, operationType: OperationType):
+    def _on_transfer_emit(self, source: Component, target: Component, operation_type: OperationType):
         self.model.hold_undo()
         if not source.object and not target.object:
             self.view.statusBar().showMessage("Please provide at least a source.", 5000)
         if source.vertex_count != target.vertex_count:
             self.view.statusBar().showMessage("Topology mismatch: Vertex counts /ID do not match.", 5000)
-        if operationType.copy:
-            self.model.transfer_weights(source, target, operationType)
-        if operationType.flip:
-            self.model.flip_weights(source, target, operationType)
-        if operationType.mirror:
-            self.model.mirror_weights(source, target, operationType)
-        if operationType.invert:
-            self.model.invert_weights(source, target, operationType)
+        if operation_type.copy:
+            self.model.transfer_weights(source, target)
+        if operation_type.flip:
+            self.model.flip_weights(source, target, operation_type)
+        if operation_type.mirror:
+            self.model.mirror_weights(source, target, operation_type)
+        if operation_type.invert:
+            self.model.invert_weights(source, target)
         self.model.restore_undo()
         self.view.statusBar().showMessage("Done !", 2000)
 
@@ -350,7 +351,7 @@ class WeightTransferPresenter:
 
 if __name__ == "__main__":
     # app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
-    model = WeightTransferModel()
-    view = WeightTransferInterface()
-    presenter = WeightTransferPresenter(model, view)
-    view.show()
+    model_wt = WeightTransferModel()
+    view_wt = WeightTransferInterface()
+    presenter = WeightTransferPresenter(model_wt, view_wt)
+    view_wt.show()
