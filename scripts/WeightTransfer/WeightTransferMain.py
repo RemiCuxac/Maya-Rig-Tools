@@ -1,3 +1,5 @@
+import dataclasses
+
 try:
     from PySide6 import QtWidgets, QtCore
     from PySide6 import pyqtSignal as Signal
@@ -8,8 +10,55 @@ import maya.cmds as cmds
 import maya.api.OpenMaya as om
 
 
+@dataclasses.dataclass
+class Component:
+    object: str = ""  # TODO : use uuid instead of name ? or full Path ?
+    objectShape: str = ""
+    componentType: str = ""  # "source" or "target"
+    deformerList: tuple = ()
+    attrsList: tuple = ()
+
+
+class ComponentWidget(QtWidgets.QGroupBox):
+    def __init__(self, component_type: str):
+        super().__init__(component_type)
+        self.comp = Component(componentType=component_type)
+        self.create_layout()
+        self.connect_signals()
+
+    def create_layout(self):
+        layout = QtWidgets.QVBoxLayout()
+        subLayout = QtWidgets.QHBoxLayout()
+        self.qlabel = QtWidgets.QLabel("Select an object and set")
+        self.qpb_set = QtWidgets.QPushButton("Set")
+        self.qcb_deformer = QtWidgets.QComboBox()
+        self.qcb_attrs = QtWidgets.QComboBox()
+        subLayout.addWidget(self.qlabel)
+        subLayout.addWidget(self.qpb_set)
+        layout.addLayout(subLayout)
+        layout.addWidget(self.qcb_deformer)
+        layout.addWidget(self.qcb_attrs)
+        self.setLayout(layout)
+
+    def connect_signals(self):
+        self.qpb_set.clicked.connect(self.fill_from_component)
+
+    def fill_from_component(self, component: Component = None):
+        if not component:
+            return
+        self.comp = component
+        self.qlabel.setText(self.comp.object)
+        self.qcb_deformer.clear()
+        self.qcb_deformer.addItems(self.comp.deformerList)
+        self.qcb_attrs.clear()
+        self.qcb_attrs.addItems(self.comp.attrsList)
+
+
 class WeightTransferInterface(QtWidgets.QMainWindow):
-    states = Signal(bool, bool, bool, str)
+    states: Signal = Signal(bool, bool, bool, str)
+    geoData: Signal = Signal()
+    component: Component = Component()
+    _pending_widget: QtWidgets.QWidget = None
 
     def __init__(self):
         super().__init__()
@@ -21,30 +70,65 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
 
     def create_layout(self):
         self.setCentralWidget(QtWidgets.QWidget())
-        ql_layout = QtWidgets.QVBoxLayout()
+        self.qvl_layout = QtWidgets.QVBoxLayout()
         self.qrb_flip = QtWidgets.QRadioButton("Flip")
         self.qrb_flip.setChecked(True)
         self.qrb_mirror = QtWidgets.QRadioButton("Mirror")
         self.qrb_invert = QtWidgets.QRadioButton("Invert")
+        self.qpb_transfer = QtWidgets.QPushButton("Transfer")
         self.qcb_axis = QtWidgets.QComboBox()
         self.qcb_axis.addItems(["x", "y", "z"])
-        self.qpb_apply = QtWidgets.QPushButton("Transfer")
-        ql_layout.addWidget(self.qrb_flip)
-        ql_layout.addWidget(self.qrb_mirror)
-        ql_layout.addWidget(self.qrb_invert)
-        ql_layout.addWidget(self.qcb_axis)
-        ql_layout.addWidget(self.qpb_apply)
+        self.qvl_layout.addWidget(self.qrb_flip)
+        self.qvl_layout.addWidget(self.qrb_mirror)
+        self.qvl_layout.addWidget(self.qrb_invert)
+        self.qvl_layout.addWidget(self.qcb_axis)
+
+        self.qpb_add_source = QtWidgets.QPushButton("+ source")
+        self.qpb_add_target = QtWidgets.QPushButton("+ target")
+        qhl_layout = QtWidgets.QHBoxLayout()
+        self.qvl_layout_sources = QtWidgets.QVBoxLayout()
+        self.qvl_layout_targets = QtWidgets.QVBoxLayout()
+        self.qvl_layout_sources.addWidget(self.qpb_add_source)
+        self.qvl_layout_targets.addWidget(self.qpb_add_target)
+        qhl_layout.addLayout(self.qvl_layout_sources)
+        qhl_layout.addLayout(self.qvl_layout_targets)
+        self.qvl_layout.addLayout(qhl_layout)
+
+
+        self.qvl_layout.addStretch()
+        self.qvl_layout.addWidget(self.qpb_transfer)
         self.statusBar()
-        self.centralWidget().setLayout(ql_layout)
+        self.centralWidget().setLayout(self.qvl_layout)
 
     def connect_signals(self):
-        self.qpb_apply.clicked.connect(self._on_transfer_clicked)
+        self.qpb_transfer.clicked.connect(self._on_transfer_clicked)
+        self.qpb_add_source.clicked.connect(self.add_source)
+        self.qpb_add_target.clicked.connect(self.add_target)
 
     def _on_transfer_clicked(self):
         self.states.emit(self.qrb_flip.isChecked(),
                          self.qrb_mirror.isChecked(),
                          self.qrb_invert.isChecked(),
                          self.qcb_axis.currentText())
+
+    def add_source(self):
+        widget = ComponentWidget("Source")
+        self.qvl_layout_sources.addWidget(widget)
+        widget.qpb_set.clicked.connect(self._on_set_clicked)
+
+    def add_target(self):
+        widget = ComponentWidget("Target")
+        self.qvl_layout_targets.addWidget(widget)
+        widget.qpb_set.clicked.connect(self._on_set_clicked)
+
+    def _on_set_clicked(self):
+        self._pending_widget: ComponentWidget = self.sender().parent()
+        self.geoData.emit()
+
+    def fill_component(self, component: Component):
+        if self._pending_widget:
+            self._pending_widget.fill_from_component(component)
+            self._pending_widget = None
 
 
 class WeightTransferModel:
@@ -57,19 +141,19 @@ class WeightTransferModel:
         self.points: list[om.MPoint] = None
         self.axis: str = None
         self.axis_index: int = None
-    
+
     @staticmethod
     def hold_undo():
         cmds.undoInfo(openChunk=True)
-        
+
     @staticmethod
     def restore_undo():
         cmds.undoInfo(closeChunk=True)
-    
+
     def check_data(self):
         vars = []
         for k, v in self.__dict__.items():
-            if not k.startswith("__") and v!=0 and not callable(v):
+            if not k.startswith("__") and v != 0 and not callable(v):
                 vars += [True] if v else [False]
         return True if all(vars) else False
 
@@ -115,7 +199,7 @@ class WeightTransferModel:
 
             vtx_map[idx] = best_idx
 
-        return vtx_map        
+        return vtx_map
 
     def get_data(self, axis: str = "x"):
         # Map blendshape target names to their weight attribute paths
@@ -130,7 +214,7 @@ class WeightTransferModel:
         if "en" in selected_attrs:
             default: list[str] = ["Envelope", ".inputTarget[0].baseWeights[*]"]
             alias_list = default if selected_attrs == ["en"] else alias_list + default
-        
+
         for idx in range(0, len(alias_list), 2):
             alias: str = str(alias_list[idx])
             raw_path: str = str(alias_list[idx + 1])
@@ -139,7 +223,7 @@ class WeightTransferModel:
             else:
                 mapped: str = f".inputTarget[0].{raw_path.replace('weight', 'inputTargetGroup')}.targetWeights[*]"
                 self.bs_index_map[alias] = mapped
-    
+
         self.geo: str = str(cmds.ls(sl=1, type="transform", noIntermediate=True)[0])
         shape_node: str = self.get_orig_shape(self.geo)
         sel: om.MSelectionList = om.MSelectionList()
@@ -175,25 +259,27 @@ class WeightTransferModel:
         vtx_map: dict[int, int] = self.get_opposite_vtx_map(self.axis_index, self.points)
         for bs, weights in self.weight.items():
             for v in range(self.vertex_count):
-                if self.points[v][self.axis_index] > 0: 
+                if self.points[v][self.axis_index] > 0:
                     cmds.setAttr(self.deform_node + self.bs_index_map[bs].replace("*", str(v)), self.weight[bs][v])
                 else:
                     cmds.setAttr(self.deform_node + self.bs_index_map[bs].replace("*", str(v)), weights[vtx_map[v]])
 
+
 class WeightTransferPresenter:
     message = Signal(list[str])
-    
+
     def __init__(self, model: WeightTransferModel, view: WeightTransferInterface):
         self.model = model
         self.view = view
         self.view.states.connect(self._on_transfer_emit)
+        self.view.geoData.connect(self._on_ask_component)
 
     def _on_transfer_emit(self, flip, mirror, invert, axis):
         self.model.get_data(axis)
         if not self.model.check_data():
             self.view.statusBar().showMessage("Select a property in the Channel Box", 5000)
             return
-        
+
         self.model.hold_undo()
         result = []
         if flip:
@@ -204,7 +290,9 @@ class WeightTransferPresenter:
             result.append(self.model.invert_weights())
         self.model.restore_undo()
         self.view.statusBar().showMessage("Done !", 2000)
-            
+
+    def _on_ask_component(self):
+        self.view.fill_component(Component("MyCube1", "MyCubeShape1", "source", ("blendshape1",), ("myAttr1",)))
 
 
 if __name__ == "__main__":
@@ -214,6 +302,5 @@ if __name__ == "__main__":
     presenter = WeightTransferPresenter(model, view)
     view.show()
     # sys.exit(app.exec())
-
 
 # TODO: add Source and Target widgets
