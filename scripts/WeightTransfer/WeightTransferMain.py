@@ -41,14 +41,14 @@ class ComponentWidget(QtWidgets.QGroupBox):
 
     def create_layout(self):
         layout = QtWidgets.QVBoxLayout()
-        subLayout = QtWidgets.QHBoxLayout()
+        sub_layout = QtWidgets.QHBoxLayout()
         self.qlabel = QtWidgets.QLabel("Select an object and set")
         self.qpb_set = QtWidgets.QPushButton("Set")
         self.qcb_deformer = QtWidgets.QComboBox()
         self.qcb_attrs = QtWidgets.QComboBox()
-        subLayout.addWidget(self.qlabel)
-        subLayout.addWidget(self.qpb_set)
-        layout.addLayout(subLayout)
+        sub_layout.addWidget(self.qlabel)
+        sub_layout.addWidget(self.qpb_set)
+        layout.addLayout(sub_layout)
         layout.addWidget(self.qcb_deformer)
         layout.addWidget(self.qcb_attrs)
         layout.addStretch()
@@ -72,12 +72,12 @@ class ComponentWidget(QtWidgets.QGroupBox):
         self.update_deform_combobox()
 
     def update_deform_combobox(self):
-        currentDeformer = self.qcb_deformer.currentText()
-        if not currentDeformer:
+        current_deformer = self.qcb_deformer.currentText()
+        if not current_deformer:
             self.qcb_attrs.clear()
             return
         self.qcb_attrs.clear()
-        self.qcb_attrs.addItems(self.comp.deformer_dict[currentDeformer].keys())
+        self.qcb_attrs.addItems(self.comp.deformer_dict[current_deformer].keys())
         self.comp.deformer_choice = self.qcb_deformer.currentText()
 
     def update_attrs_combobox(self):
@@ -209,17 +209,18 @@ class WeightTransferModel:
             deform_list[d] = {}
             aliases = cmds.aliasAttr(d, query=True) or ["weights", "weight[0]"]
             for i in range(0, len(aliases), 2):
-                attrName = aliases[i]
-                attrIndex = aliases[i + 1].rstrip(']').split('[')[-1]
+                attr_name = aliases[i]
+                attr_index = aliases[i + 1].rstrip(']').split('[')[-1]
                 if cmds.objectType(d, isType="blendShape"):
-                    path = f"{d}.inputTarget[0].inputTargetGroup[{attrIndex}].targetWeights[*]"
+                    path = f"{d}.inputTarget[0].inputTargetGroup[{attr_index}].targetWeights[*]"
                 else:
-                    path = f"{d}.weightList[{attrIndex}].weights[*]"
-                deform_list[d][attrName] = path
+                    path = f"{d}.weightList[{attr_index}].weights[*]"
+                deform_list[d][attr_name] = path
         return deform_list
 
     def get_data(self, component: Component) -> Optional[Component]:
-        component.object = str(cmds.ls(selection=True, type="transform", noIntermediate=True)[0])
+        selection = cmds.ls(selection=True, type="transform", noIntermediate=True)
+        component.object = selection[0] if selection else None
         if not component.object:
             return None
         component.object_shape = self.get_orig_shape(component.object)
@@ -324,8 +325,12 @@ class WeightTransferPresenter:
         self.view.get_data_component.connect(self._on_ask_component)
 
     def _on_transfer_emit(self, source: Component, target: Component, operationType: OperationType):
+        print("hey")
         self.model.hold_undo()
-        assert source.vertex_count == target.vertex_count, "Vertex count differs. Please use same vertex count / ID."
+        if not source.object and not target.object:
+            self.view.statusBar().showMessage("Please provide at least a source.", 5000)
+        if source.vertex_count != target.vertex_count:
+            self.view.statusBar().showMessage("Topology mismatch: Vertex counts /ID do not match.", 5000)
         if operationType.none:
             self.model.transfer_weights(source, target, operationType)
         if operationType.flip:
@@ -339,6 +344,8 @@ class WeightTransferPresenter:
 
     def _on_ask_component(self, component: Component):
         component = self.model.get_data(component)
+        if not component:
+            self.view.statusBar().showMessage("Please select a component.", 5000)
         self.view.fill_component(component)
 
 
