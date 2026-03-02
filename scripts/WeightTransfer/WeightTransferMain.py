@@ -224,7 +224,7 @@ class WeightTransferModel:
         sel: om.MSelectionList = om.MSelectionList()
         sel.add(component.object_shape)
         mesh_fn: om.MFnMesh = om.MFnMesh(sel.getDagPath(0))
-        return [(p.x, p.y, p.z, p.w) for p in mesh_fn.getPoints(om.MSpace.kObject)]
+        return om.MPointArray(mesh_fn.getPoints(om.MSpace.kObject))
 
     @staticmethod
     def get_weights(component: Component) -> list:
