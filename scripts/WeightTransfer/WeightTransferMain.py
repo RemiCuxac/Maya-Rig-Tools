@@ -213,6 +213,7 @@ class WeightTransferModel:
                 attr_name = aliases[i]
                 attr_index = aliases[i + 1].rstrip(']').split('[')[-1]
                 if cmds.objectType(d, isType="blendShape"):
+                    deform_list[d]["envelope"] = f"{d}.inputTarget[0].baseWeights[*]"  # manually add envelope weight
                     path = f"{d}.inputTarget[0].inputTargetGroup[{attr_index}].targetWeights[*]"
                 else:
                     path = f"{d}.weightList[{attr_index}].weights[*]"
