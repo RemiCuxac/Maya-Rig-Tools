@@ -18,7 +18,7 @@ import maya.api.OpenMaya as om
 
 StatusTheme = namedtuple("Style", ['background', 'color'])
 SUCCESS = StatusTheme("SeaGreen", "white")
-WARNING = StatusTheme("DarkOrange", "white")
+WARNING = StatusTheme("Chocolate", "white")
 ERROR = StatusTheme("IndianRed", "white")
 
 
@@ -269,7 +269,7 @@ class WeightTransferModel:
         cmds.undoInfo(openChunk=True, chunkName="WeightTransfer")
 
     @staticmethod
-    def restore_undo():
+    def close_undo():
         """Closes an undo chunk."""
         cmds.undoInfo(closeChunk=True)
 
@@ -325,22 +325,8 @@ class WeightTransferModel:
     @staticmethod
     def get_weights(component: Component):
         """Robust function to reads the weights from the selected deformer attribute."""
-        attr_path = component.deformer_dict[component.deformer_choice][component.attr_choice]
-        attr_mask = attr_path.replace("*", ":")
-        try:
-            # Because we get weights on blendshapes differently than on main envelope
-            weights = cmds.getAttr(attr_mask)
-            return weights if weights is not None else []
-        except ValueError:
-            try:
-                parent_path = attr_path.split('[*]')[0]
-                return cmds.getAttr(parent_path) or []
-            except ValueError:
-                return [cmds.getAttr(component.deformer_dict[component.deformer_choice][component.attr_choice].replace(
-                    "*", str(v))) for v in range(component.vertex_count)]
-            except:
-                traceback.print_exc()
-                cmds.warning("Weights not supported by the tool. Please warn the author of the script.")
+        return [cmds.getAttr(component.deformer_dict[component.deformer_choice][component.attr_choice].replace(
+            "*", str(v))) for v in range(component.vertex_count)]
 
     @staticmethod
     def get_opposite_vtx_map(axis_index: int,
@@ -411,19 +397,19 @@ class WeightTransferModel:
     def check_data(self, *components) -> bool:
         """Ensures that all components given weren't altered and are valid."""
         last = " Please set again."
-        assert all([c.object or False for c in components]), "Please make sure all widgets are set."
-        assert len(set([c.vertex_count for c in components])) == 1, "Vertex count mismatch between source and targets."
-        for c in components:
-            c: Component
-            assert cmds.objExists(c.object), "Object not found." + last
-            assert cmds.objExists(c.deformer_choice), "Deformer not found."
-            assert cmds.objExists(f"{c.deformer_choice}.{c.attr_choice}"), "Attribute not found." + last
-            assert c.vertex_count == self.get_vertex_count(c), "Vertex count has changed." + last
+        for comp in components:
+            comp: Component
+            assert comp.object, "Please make sure all widgets are filled."
+            assert cmds.objExists(comp.object), "Object not found." + last
+            assert cmds.objExists(comp.deformer_choice), "Deformer not found."
+            assert cmds.objExists(f"{comp.deformer_choice}.{comp.attr_choice}"), "Attribute not found." + last
+            assert comp.vertex_count == components[0].vertex_count, "Vertex count mismatch between source and targets."
+            assert comp.vertex_count == self.get_vertex_count(comp), "Vertex count has changed." + last
         return True
 
     def transfer_weights(self, source: Component, *targets):
         """Direct copy of weights from source to target."""
-        src_weights = self.get_weights(source)
+        src_weights = self.get_weights(source)[1:-2]
         for target in targets:
             path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
             for v in range(source.vertex_count):
@@ -497,12 +483,12 @@ class WeightTransferPresenter:
                 self.model.mirror_weights(source, *targets, operation_type=operation_type)
             if operation_type.invert:
                 self.model.invert_weights(source, *targets)
-            self.model.restore_undo()
+            self.model.close_undo()
             self.view.send_message("Done !", SUCCESS)
         except Exception as e:
             traceback.print_exc()
+            self.model.close_undo()
             self.model.undo()
-            self.model.restore_undo()
             self.view.send_message(str(e), ERROR)
 
     def _on_ask_component(self, component: Component):
