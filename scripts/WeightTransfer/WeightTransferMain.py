@@ -222,7 +222,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
     def _add_target(self):
         """Adds a target component widget."""
         widget = ComponentWidget("Target")
-        self.qvl_layout_targets.addWidget(widget)
+        self.qvl_layout_targets.insertWidget(self.qvl_layout_targets.count() - 1, widget)
         widget.qpb_set.clicked.connect(self._on_set_clicked)
 
     def _on_set_clicked(self):
@@ -505,7 +505,7 @@ class WeightTransferPresenter:
 
 if __name__ == "__main__":
     # app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
-    model_wt = WeightTransferModel()
-    view_wt = WeightTransferInterface()
-    presenter = WeightTransferPresenter(model_wt, view_wt)
-    view_wt.show()
+    wt_model = WeightTransferModel()
+    wt_view = WeightTransferInterface()
+    wt_presenter = WeightTransferPresenter(wt_model, wt_view)
+    wt_view.show()
