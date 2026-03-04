@@ -409,7 +409,7 @@ class WeightTransferModel:
 
     def transfer_weights(self, source: Component, *targets):
         """Direct copy of weights from source to target."""
-        src_weights = self.get_weights(source)[1:-2]
+        src_weights = self.get_weights(source)
         for target in targets:
             path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
             for v in range(source.vertex_count):
