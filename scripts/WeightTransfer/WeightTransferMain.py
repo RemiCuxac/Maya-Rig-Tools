@@ -79,6 +79,7 @@ class ComponentWidget(QtWidgets.QGroupBox):
         self.setLayout(layout)
         if self.comp.component_type != "Source":
             self.setCheckable(True)
+        self.setMinimumWidth(150)
 
     def connect_signals(self):
         """Connects UI signals to slots."""
@@ -117,7 +118,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
     Main Window for the Weight Transfer tool.
     Manages the overall layout and user interactions.
     """
-    transfer: Signal = Signal(Component, Component, OperationType)  # source component, target component, and operation
+    transfer: Signal = Signal(Component, list, OperationType)  # source, targets, operation
     get_component: Signal = Signal(Component)
 
     def __init__(self):
@@ -192,17 +193,15 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
         """Handles the transfer button click, gathering data and emitting the transfer signal."""
         source = self.qvl_layout_sources.itemAt(0).widget()  # we assume source is the first widget of the layout
         assert isinstance(source, ComponentWidget)
-        target_widgets = []
+        targets = []
         for i in range(self.qvl_layout_targets.count()):
             widget = self.qvl_layout_targets.itemAt(i).widget()
             if not isinstance(widget, ComponentWidget):
                 continue
-            target_widgets.append(widget)
-        if target_widgets:
-            for target in target_widgets:
-                self.transfer.emit(source.comp, target.comp, self._get_operation())
-        else:
-            self.transfer.emit(source.comp, source.comp, self._get_operation())
+            targets.append(widget.comp)
+        if not targets:
+            targets = [source.comp]
+        self.transfer.emit(source.comp, targets, self._get_operation())
 
     def _get_operation(self):
         """Collects the selected operation parameters from the UI."""
@@ -223,7 +222,7 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
     def _add_target(self):
         """Adds a target component widget."""
         widget = ComponentWidget("Target")
-        self.qvl_layout_targets.insertWidget(0, widget)
+        self.qvl_layout_targets.addWidget(widget)
         widget.qpb_set.clicked.connect(self._on_set_clicked)
 
     def _on_set_clicked(self):
@@ -345,7 +344,7 @@ class WeightTransferModel:
 
     @staticmethod
     def get_opposite_vtx_map(axis_index: int,
-                             points: list,
+                             points: om.MPointArray,
                              tolerance: float = 0.001) -> dict[int, int]:
         """
         Calculates a mapping between vertices and their mirrored counterparts.
@@ -409,53 +408,57 @@ class WeightTransferModel:
         component.deformer_dict = self.get_deformer_dict(component)
         return component
 
-    def check_data(self, *args) -> bool:
+    def check_data(self, *components) -> bool:
         """Ensures that all components given weren't altered and are valid."""
         last = " Please set again."
-        assert all([comp.object or False for comp in args]), "Please make sure all widgets are set."
-        assert len(set([comp.vertex_count for comp in args])) == 1, "Vertex count mismatch between source and targets."
-        for comp in args:
-            comp: Component
-            assert cmds.objExists(comp.object), "Object not found." + last
-            assert cmds.objExists(comp.deformer_choice), "Deformer not found."
-            # assert cmds.objExists(f"{comp.deformer_choice}.{comp.attr_choice}"), "Attribute not found." + last
-            assert comp.vertex_count == self.get_vertex_count(comp), "Vertex count has changed." + last
+        assert all([c.object or False for c in components]), "Please make sure all widgets are set."
+        assert len(set([c.vertex_count for c in components])) == 1, "Vertex count mismatch between source and targets."
+        for c in components:
+            c: Component
+            assert cmds.objExists(c.object), "Object not found." + last
+            assert cmds.objExists(c.deformer_choice), "Deformer not found."
+            assert cmds.objExists(f"{c.deformer_choice}.{c.attr_choice}"), "Attribute not found." + last
+            assert c.vertex_count == self.get_vertex_count(c), "Vertex count has changed." + last
         return True
 
-    def transfer_weights(self, source: Component, target: Component):
+    def transfer_weights(self, source: Component, *targets):
         """Direct copy of weights from source to target."""
         src_weights = self.get_weights(source)
-        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
-        for v in range(source.vertex_count):
-            cmds.setAttr(path.replace('*', str(v)), src_weights[v])
+        for target in targets:
+            path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+            for v in range(source.vertex_count):
+                cmds.setAttr(path.replace('*', str(v)), src_weights[v])
 
-    def flip_weights(self, source: Component, target: Component, operation_type: OperationType) -> None:
+    def flip_weights(self, source: Component, *targets, operation_type: OperationType) -> None:
         """Flips weights across the specified axis."""
         points = self.get_points(source)
         vtx_map = self.get_opposite_vtx_map(self.get_axis_index(operation_type.axis), points)
         src_weights = self.get_weights(source)
-        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
-        for v in range(source.vertex_count):
-            cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
+        for target in targets:
+            path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+            for v in range(source.vertex_count):
+                cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
 
-    def invert_weights(self, source: Component, target: Component):
+    def invert_weights(self, source: Component, *targets):
         """Inverts weights (1 - weight)."""
         src_weights = self.get_weights(source)
-        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
-        for v in range(source.vertex_count):
-            cmds.setAttr(path.replace('*', str(v)), 1 - src_weights[v])
+        for target in targets:
+            path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+            for v in range(source.vertex_count):
+                cmds.setAttr(path.replace('*', str(v)), 1 - src_weights[v])
 
-    def mirror_weights(self, source: Component, target: Component, operation_type: OperationType):
+    def mirror_weights(self, source: Component, *targets, operation_type: OperationType):
         """Mirrors weights from positive to negative side (or vice versa) across axis."""
         points = self.get_points(source)
         vtx_map = self.get_opposite_vtx_map(self.get_axis_index(operation_type.axis), points)
         src_weights = self.get_weights(source)
-        path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
-        for v in range(source.vertex_count):
-            if points[v][self.get_axis_index(operation_type.axis)] > 0:  # checks if x, y or z is positive
-                cmds.setAttr(path.replace('*', str(v)), src_weights[v])
-            else:
-                cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
+        for target in targets:
+            path: str = target.deformer_dict[target.deformer_choice][target.attr_choice]
+            for v in range(source.vertex_count):
+                if points[v][self.get_axis_index(operation_type.axis)] > 0:  # checks if x, y or z is positive
+                    cmds.setAttr(path.replace('*', str(v)), src_weights[v])
+                else:
+                    cmds.setAttr(path.replace('*', str(v)), src_weights[vtx_map[v]])
 
 
 # -----------------------------------------------------------------------------
@@ -474,26 +477,26 @@ class WeightTransferPresenter:
         self.view.transfer.connect(self._on_transfer_emit)
         self.view.get_component.connect(self._on_ask_component)
 
-    def _on_transfer_emit(self, source: Component, target: Component, operation_type: OperationType):
+    def _on_transfer_emit(self, source: Component, targets: list[Component], operation_type: OperationType):
         """
         Slot called when transfer is requested.
         Validates inputs and executes the requested operation.
         """
         try:
-            self.model.check_data(source, target)
+            self.model.check_data(source, *targets)
         except Exception as e:
             self.view.send_message(str(e), WARNING)
             return
         try:
             self.model.hold_undo()
             if operation_type.copy:
-                self.model.transfer_weights(source, target)
+                self.model.transfer_weights(source, *targets)
             if operation_type.flip:
-                self.model.flip_weights(source, target, operation_type)
+                self.model.flip_weights(source, *targets, operation_type=operation_type)
             if operation_type.mirror:
-                self.model.mirror_weights(source, target, operation_type)
+                self.model.mirror_weights(source, *targets, operation_type=operation_type)
             if operation_type.invert:
-                self.model.invert_weights(source, target)
+                self.model.invert_weights(source, *targets)
             self.model.restore_undo()
             self.view.send_message("Done !", SUCCESS)
         except Exception as e:
