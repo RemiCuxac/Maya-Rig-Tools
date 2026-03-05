@@ -5,10 +5,8 @@ from typing import Optional
 
 try:
     from PySide6 import QtWidgets, QtCore
-    from PySide6 import pyqtSignal as Signal
 except ModuleNotFoundError:
     from PySide2 import QtWidgets, QtCore
-    from PySide2.QtCore import Signal
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 
@@ -118,8 +116,8 @@ class WeightTransferInterface(QtWidgets.QMainWindow):
     Main Window for the Weight Transfer tool.
     Manages the overall layout and user interactions.
     """
-    transfer: Signal = Signal(Component, list, OperationType)  # source, targets, operation
-    get_component: Signal = Signal(Component)
+    transfer: QtCore.Signal = QtCore.Signal(Component, list, OperationType)  # source, targets, operation
+    get_component: QtCore.Signal = QtCore.Signal(Component)
 
     def __init__(self):
         super().__init__()
@@ -302,7 +300,7 @@ class WeightTransferModel:
             if cmds.objectType(d, isType="skinCluster"):
                 continue
             deform_list[d] = {}
-            aliases = cmds.aliasAttr(d, query=True) or ["weights", "weight[0]"]
+            aliases = cmds.aliasAttr(d, query=True) or ["envelope", "envelope[0]"]
             for i in range(0, len(aliases), 2):
                 attr_name = aliases[i]
                 attr_index = aliases[i + 1].rstrip(']').split('[')[-1]
@@ -385,10 +383,9 @@ class WeightTransferModel:
     def get_data(self, component: Component) -> Optional[Component]:
         """Populates the Component object with data from the current Maya selection."""
         selection = cmds.ls(selection=True, type="transform", noIntermediate=True)
-        component.object = selection[0] if selection else None
-        if not component.object:
-            return None
-        # component.object_short = component.object.split("|")[-1]
+        assert len(selection) == 1, "Please select one object."
+        component.object = selection[0]
+        assert cmds.findDeformers(component.object), "No deformer found on your object."
         component.object_shape = self.get_orig_shape(component)
         component.vertex_count = self.get_vertex_count(component)
         component.deformer_dict = self.get_deformer_dict(component)
@@ -493,10 +490,11 @@ class WeightTransferPresenter:
 
     def _on_ask_component(self, component: Component):
         """Slot called when a component needs to be populated from selection."""
-        component = self.model.get_data(component)
-        if not component:
-            self.view.send_message("Please select a component.", WARNING)
-        self.view.fill_component(component)
+        try:
+            component = self.model.get_data(component)
+            self.view.fill_component(component)
+        except Exception as e:
+            self.view.send_message(str(e), WARNING)
 
 
 # -----------------------------------------------------------------------------
