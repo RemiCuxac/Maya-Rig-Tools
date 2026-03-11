@@ -1,6 +1,6 @@
 import traceback
 from collections import namedtuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 try:
@@ -28,8 +28,7 @@ class OperationType:
     mirror: bool = False
     invert: bool = False
     axis: str = ""
-    axis_index: int = None
-
+    axis_index: int = field(init=False, repr=False)
 
 @dataclass
 class Component:
@@ -38,9 +37,9 @@ class Component:
     object_shape: str = ""
     vertex_count: int = None
     component_type: str = ""  # "Source" or "Target"
-    deformer_dict: dict[str, dict[str, str]] = None
-    deformer_choice: str = ""
-    attr_choice: str = ""
+    deformer_dict: dict[str, dict[str, str]] = field(init=False, repr=False)
+    deformer_choice: str = field(init=False)
+    attr_choice: str = field(init=False)
 
 
 # -----------------------------------------------------------------------------
