@@ -1,3 +1,6 @@
 [submodule "Ribbon-Creator"]
 	path = tools/Ribbon-Creator
 	url = https://github.com/RemiCuxac/Ribbon-Creator
+[submodule "Export-Import-Skinning"]
+	path = tools/Export-Import-Skinning
+	url = https://github.com/RemiCuxac/Export-Import-Skinning
