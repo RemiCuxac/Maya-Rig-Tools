@@ -8,3 +8,12 @@
 	path = tools/Weight-Transfer
 	url = https://github.com/RemiCuxac/Weight-Transfer
 
+[submodule "Maya-Note-Tool"]
+	path = tools/Maya-Note-Tool
+	url = https://github.com/RemiCuxac/Maya-Note-Tool
+[submodule "Joint-Plane-Helper"]
+	path = tools/Joint-Plane-Helper
+	url = https://github.com/RemiCuxac/Joint-Plane-Helper
+[submodule "Maya-Transform-Checker"]
+	path = tools/Transform-Checker
+	url = https://github.com/RemiCuxac/Maya-Transform-Checker
