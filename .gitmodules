@@ -4,3 +4,6 @@
 [submodule "Export-Import-Skinning"]
 	path = tools/Export-Import-Skinning
 	url = https://github.com/RemiCuxac/Export-Import-Skinning
+[submodule "Weight-Transfer"]
+	path = tools/Weight-Transfer
+	url = https://github.com/RemiCuxac/Weight-Transfer
