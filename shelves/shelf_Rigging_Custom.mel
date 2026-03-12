@@ -1,0 +1,1601 @@
+global proc shelf_Rigging_Custom () {
+    global string $gBuffStr;
+    global string $gBuffStr0;
+    global string $gBuffStr1;
+
+
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Show Node Editor" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Node Editor" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Nodes" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "dagNode.svg" 
+        -image1 "dagNode.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "NodeEditorWindow" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Show Component Editor" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Component Editor" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Components" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "defaultFourStackedLayout.png" 
+        -image1 "defaultFourStackedLayout.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "ComponentEditor" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Show Shape Editor" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Shape Editor" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Shapes" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "blendShapeEditor.png" 
+        -image1 "blendShapeEditor.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "ShapeEditor" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    separator
+        -enable 1
+        -width 34
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Delete construction history on the selected object(s)" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Delete History" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "DeleteHistory.png" 
+        -image1 "DeleteHistory.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "if(!size(`ls -sl`)) error -n \"Please select an object\";\nelse DeleteHistory;" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Center Pivot" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Center Pivot" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "CenterPivot.png" 
+        -image1 "CenterPivot.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "if(!size(`ls -sl`)) error -n \"Please select an object\";\nelse CenterPivot;" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Match the transforms of selected objects to the last-selected object. (Native way)" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Match Transform" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Match" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "move_M.png" 
+        -image1 "move_M.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "MatchTransform -position -rotation" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Create a correctly positioned group for each item in the selection" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Group Align" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Group" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "group.png" 
+        -image1 "group.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef group(pObjList: list):\n    if not pObjList:\n        cmds.group(n = \"grp_01\", empty=True)\n        return\n    for obj in pObjList:\n        objName = obj.split(\"|\")[-1]\n        parent = cmds.listRelatives(obj, parent=True, fullPath=True)\n        group = cmds.group(empty=True)\n        cmds.matchTransform(group, obj)\n        cmds.parent(obj, group)\n        if parent:\n            cmds.parent(group, parent)\n        cmds.rename(group, f\"grp_{objName}\")\n\n\nsel = cmds.ls(sl=1, long=True)\nsel.sort(key=lambda x:x.count(\"|\"), reverse=True)\ngroup(sel)\n\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Transfer transforms of current selection to his parent transform, then reset transforms of selection." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Transfer Transform to Parents" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Reset Parent" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "group.png" 
+        -image1 "group.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef transfer_transforms_to_parent(pObjList: list):\n    for obj in pObjList:\n        parent = cmds.listRelatives(obj, parent=True)\n        if parent:\n            if cmds.objectType(parent) == \"transform\" and len(cmds.listRelatives(parent, shapes=True) or []) == 0:\n                cmds.matchTransform(parent, obj)\n                cmds.matchTransform(obj, parent)\n            \nsel = cmds.ls(sl=True, long=True, type=\"transform\")\ntransfer_transforms_to_parent(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Transfer transforms to OffsetParentMatrix attribute.\nThis will set transforms to 0 and helps to be free from group parents." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Transfer transforms to offsetParentMatrix" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Offset Parent Matrix" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "decomposeMatrix.svg" 
+        -image1 "decomposeMatrix.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.api.OpenMaya as om\nimport maya.cmds as cmds\n\nTRANSFORM_NODETYPES = [\"transform\", \"joint\"]\n\n\ndef has_non_default_locked_attributes(pNode:str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        default_value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                current_value = cmds.getAttr(attribute_name)\n                if cmds.getAttr(attribute_name, lock=True) and current_value != default_value:\n                    return True\n\n\ndef reset_transforms(pNode:str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                if not cmds.getAttr(attribute_name, lock=True):\n                    cmds.setAttr(attribute_name, value)\n\n\ndef bake_transform_to_offset_parent_matrix(pObjList: list):\n    for node in pObjList:\n        if cmds.nodeType(node) not in TRANSFORM_NODETYPES:\n            raise ValueError(\"Node {} is not a transform node\".format(node))\n\n        if has_non_default_locked_attributes(node):\n            raise RuntimeError(\"Node {} has at least one non default locked attribute(s)\".format(node))\n\n        local_matrix = om.MMatrix(cmds.xform(node, q=True, m=True, ws=False))\n        offset_parent_matrix = om.MMatrix(cmds.getAttr(node + \".offsetParentMatrix\"))\n        baked_matrix = local_matrix * offset_parent_matrix\n        cmds.setAttr(node + \".offsetParentMatrix\", baked_matrix, type=\"matrix\")\n    \n        reset_transforms(node)\n\n\nsel = cmds.ls(sl=True)\nbake_transform_to_offset_parent_matrix(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Freeze Transformations" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Freeze Transformations" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "FreezeTransform.png" 
+        -image1 "FreezeTransform.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.api.OpenMaya as om\nfrom maya import cmds\n\n\ndef freeze_transform(pObjList: list):\n    for obj in pObjList:\n        if cmds.objectType(obj) == \"joint\":\n            # rotation\n            mat = cmds.xform(obj, q=True, m=True)\n            m = om.MMatrix(mat)\n            mt = om.MTransformationMatrix(m)\n            rot = mt.rotation()\n            rotRad = (rot.x, rot.y, rot.z)\n            rotDeg = [om.MAngle(angle).asDegrees() for angle in rotRad]\n            cmds.setAttr(f\"{obj}.rotate\", 0, 0, 0)\n            cmds.setAttr(f\"{obj}.jointOrient\", *rotDeg)\n            \n            # scale\n            skin = list(set(cmds.listConnections(obj, d=True, s=False, type=\"skinCluster\")))\n            if skin and cmds.getAttr(f\"{obj}.scale\")!=[(1.0, 1.0, 1.0)]:\n                cmds.warning(f\"Bind Pose has been modified since the scale of {obj} has changed. Please reset skin Bind Pose\")\n            listChildren = {}\n            for child in cmds.listRelatives(obj, fullPath=True, children=True) or []:\n                mat = cmds.xform(child, q=True, m=True, ws=True)\n                listChildren[child] = mat\n            cmds.setAttr(f\"{obj}.scale\", 1,1,1)\n            for child in listChildren:\n                cmds.xform(child, m=listChildren[child], ws=True)            \n        else:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True, n=False, pn=True)\n\n\nsel = cmds.ls(sl=1)\nfreeze_transform(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -sourceType "python" 
+        -doubleClickCommand "FreezeTransformationsOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    separator
+        -enable 1
+        -width 34
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Select hierarchy" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Hierarchy" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "pickHierarchy.png" 
+        -image1 "pickHierarchy.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "if(!size(`ls -sl`)) error -n \"Please select an object\";\nelse SelectHierarchy;" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Toggle local rotation axis visibility" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Local Rotation Axes" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "holder.svg" 
+        -image1 "holder.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "if(!size(`ls -sl`)) error -n \"Please select an object\";\nelse ToggleLocalRotationAxes" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Show Vertex ID" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Show Vertex ID" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "reorderIDs.png" 
+        -image1 "reorderIDs.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "if(!size(`ls -sl`)) error -n \"Please select an object\";\nelse ToggleVertIDs;" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    separator
+        -enable 1
+        -width 34
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Create locator from gizmo" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Create aligned locator " 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Loc" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "locator.svg" 
+        -image1 "locator.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef create_loc_from_gizmo(pObjList: list):\n    prevObjName = \"\"\n    if not pObjList:\n        obj = cmds.spaceLocator(name = \"locator_01\")\n        return\n    for obj in pObjList:\n        objName = obj.split('|')[-1].split('.')[0]\n        mat = cmds.xform(obj, q=True, ws=True, m=True)\n        pos = cmds.manipMoveContext(\"Move\", q=True, p=True)\n        if objName == prevObjName:\n            continue\n        prevObjName = objName\n        obj = cmds.spaceLocator(name=f\"locator_{objName}\")\n        cmds.setToolTo(\"moveSuperContext\")\n        cmds.xform(obj, ws=True, m=mat)\n        cmds.xform(obj, ws=True, translation=pos)\n\n\nsel = cmds.ls(sl=1)\ncreate_loc_from_gizmo(sel)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Create joint" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Create Joint" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Create" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "kinJoint.png" 
+        -image1 "kinJoint.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "JointToolOptions" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Extract joint" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Extract joint" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Extract" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "kinDisconnect.png" 
+        -image1 "kinDisconnect.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef extract_joint(pObjList: list):\n    for obj in pObjList:\n        objName = obj.split(\"|\")[-1] if \"|\" in obj else obj\n        newObj = cmds.duplicate(obj, parentOnly=True)[0]\n        parent = cmds.listRelatives(obj, parent=True)\n        if parent:\n            cmds.parent(newObj, world=True)\n        radius = cmds.getAttr(f\"{obj}.radius\")\n        cmds.setAttr(f\"{newObj}.radius\", radius + 1)\n        cmds.rename(newObj, f\"{objName}_to_rename\")\n\n\nsel = cmds.ls(sl=1, type=\"joint\")\nextract_joint(sel) if sel else cmds.warning(\"Please select a joint from your skeleton\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Select a joint to mirror" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Mirror Joints" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Mirror" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "kinMirrorJoint_S.png" 
+        -image1 "kinMirrorJoint_S.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\nleftToRight = {\"left\": \"right\", \"Left\": \"Right\", \"_l_\": \"_r_\", \"_L_\": \"_R_\", \"_l\": \"_r\", \"_L\": \"_R\"}\nfull_mapping = {**leftToRight, **{v: k for k, v in leftToRight.items()}}\n\n\ndef mirror_joints(pJntList: list):\n    for obj in pJntList:\n        for key, value in full_mapping.items():\n            if obj.count(key) > 1:  # for objets like jnt_leg_l\n                # because there is no reverse replace, only replace the last occurrence if True :\n                if obj.endswith(key) or obj.startswith(key):\n                    if obj.endswith(key):\n                        index = obj.count(key) - 1\n                    else:\n                        index = 1\n                    obj = cmds.rename(obj, obj.replace(key, \"TEMP\", index))\n                    mirrored = cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n                    mirrored.reverse()\n                    for e in mirrored + [obj]:\n                        cmds.rename(e, e.split(\"|\")[-1].replace(\"TEMP\", key))\n                else:\n                    mirrored = cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n                    cmds.warning(f\"Please review naming of {obj} and {', '.join(mirrored)} and his hierarchy\")\n                break\n            elif key in obj:\n                cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n                break\n        else:\n            mirrored = cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n            cmds.warning(f\"Please review naming of {obj} and {', '.join(mirrored)} and his hierarchy\")\n\n\nsel = cmds.ls(sl=1, type=\"joint\")\nmirror_joints(sel) if sel else cmds.error(\"Please select the root of the chain you want to mirror\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Select the root bone and execute; it will create a range of motion for all children." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Range of Motion" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "ROM" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "animateSnapshot.png" 
+        -image1 "animateSnapshot.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.cmds as cmds\n\n\ndef key_rotate(pBone: str):\n    cmds.setKeyframe(pBone, attribute='rotateX', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateY', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateZ', t=cmds.currentTime(query=True))\n\n\ndef get_rotations(axis):\n    lRotationX = [(90, 0, 0), (-180, 0, 0), (90, 0, 0)]\n    lRotationY = [(0, 90, 0), (0, -180, 0), (0, 90, 0)]\n    lRotationZ = [(0, 0, 90), (0, 0, -180), (0, 0, 90)]\n\n    if axis == \"X\":\n        return lRotationX\n    elif axis == \"Y\":\n        return lRotationY\n    elif axis == \"Z\":\n        return lRotationZ\n    return None\n\n\ndef process_all_bones(pBone: str):\n    # Apply the keyframe and store the current rotation\n    key_rotate(pBone)\n\n    # Iterate through each axis and set the keyframes for the bone\n    for axis in ['X', 'Y', 'Z']:\n        rotations = get_rotations(axis)\n        for rotation in rotations:\n            cmds.currentTime(cmds.currentTime(query=True) + 1)\n            cmds.rotate(rotation[0], rotation[1], rotation[2], pBone, relative=True, componentSpace=True)\n            key_rotate(pBone)\n\n    # Recursively process all child bones\n    children = cmds.listRelatives(pBone, children=True, fullPath=True) or []\n    for child in children:\n        process_all_bones(child)\n\n\n# Call the process_all_bones function for each root joint in the scene\nroot_joints = cmds.ls(sl=1, type=\"joint\", l=True)\nif len(root_joints) > 2:\n    cmds.error(\"Maybe you have selected more than a root, please proceed one root at time to avoid long calculation\", n=True)\nelif not root_joints:\n    cmds.error(\"Please select a joint of your skeleton.\", n=True)\nelse:\n    cmds.currentUnit(time=\"6fps\")\n    cmds.refresh(suspend=True)\n    for joint in root_joints:\n        process_all_bones(joint)\n    current_frame = cmds.currentTime(query=True)\n    cmds.playbackOptions(maxTime=current_frame, animationEndTime=current_frame)\n    cmds.currentUnit(time=\"30fps\")\n    cmds.refresh(suspend=False)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Returns the skeleton to the position where its bind pose was set.\nCould work for\n -geo \n -joint \n -controller" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Go to Bind Pose" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "goToBindPose.png" 
+        -image1 "goToBindPose.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\nfrom maya.api import OpenMaya as om\nimport math\n\n\ndef get_bind_mat(obj):\n    if cmds.objectType(obj) == \"joint\":\n        if skinList := list(set(cmds.ls(cmds.listConnections(f\"{obj}.worldMatrix[0]\", type=\"skinCluster\", p=True)))):\n            bindPreMat = cmds.getAttr(skinList[0].replace(\"matrix\", \"bindPreMatrix\"))\n            return om.MMatrix(bindPreMat).inverse()\n    return None    \n\n\ndef go_to_bind_pose(obj):\n    isJoint = cmds.objectType(obj, isType=\"joint\")\n    \n    if isJoint:\n        targetMat = get_bind_mat(obj)\n        constraint_type = None\n    else:\n        # Controller case - find driven joint\n        joint = cmds.ls(cmds.listHistory(obj, future=True, leaf=False), type=\"joint\")[:1]\n        if not joint:\n            return\n        bindMat = get_bind_mat(joint)\n        if not bindMat:\n            return\n        \n        constraints = cmds.listConnections(joint, type=\"constraint\", source=True, destination=False) or []\n        constraint_type = cmds.nodeType(constraints[0]) if constraints else None\n        \n        # Calculate offset and target\n        jointMat = om.MMatrix(cmds.xform(joint, q=True, ws=True, m=True))\n        controlMat = om.MMatrix(cmds.xform(obj, q=True, ws=True, m=True))\n        targetMat = (controlMat * jointMat.inverse()) * bindMat\n    \n    if not targetMat:\n        return\n    \n    # Extract transforms\n    mat = om.MTransformationMatrix(targetMat)\n    trans = mat.translation(om.MSpace.kWorld)\n    rot = mat.rotation().reorder(cmds.getAttr(f\"{obj}.rotateOrder\"))\n    scale = mat.scale(om.MSpace.kWorld)\n    \n    # Apply based on constraint type\n    if constraint_type == 'orientConstraint':\n        cmds.xform(obj, ws=True, ro=[math.degrees(angle) for angle in rot])\n    elif constraint_type == 'pointConstraint':\n        cmds.xform(obj, ws=True, t=trans)\n    else:\n        cmds.xform(obj, ws=True, t=trans, ro=[math.degrees(angle) for angle in rot], s=scale)\n\n\nsel = cmds.ls(sl=1, long=True)\nfor obj in sel:\n    if cmds.objectType(obj, isType=\"joint\"):\n        # Process from parent to child\n        hierarchy = [obj] + (cmds.listRelatives(obj, allDescendents=True, fullPath=True, type=\"joint\") or [])\n        hierarchy.sort(key=len)\n        for jnt in hierarchy:\n            go_to_bind_pose(jnt)\n    elif cmds.objectType(obj, isType=\"transform\"):\n        shape = cmds.listRelatives(obj, shapes=True, noIntermediate=True)\n        if cmds.objectType(shape) == \"mesh\":  # process for geos\n            skin = cmds.listConnections(shape, type=\"skinCluster\")\n            dagPose1 = cmds.listConnections(skin, type=\"dagPose\")\n            cmds.dagPose(obj, dagPose1, r=True, g=True)\n        elif cmds.objectType(shape) == \"nurbsCurve\":  # process for controlers\n            go_to_bind_pose(obj)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    separator
+        -enable 1
+        -width 34
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Assigns selected vertices with the same weight values as their neighboring vertices" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Hammer Skin Weights" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Hammer" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "smoothSkinWeights.png" 
+        -image1 "smoothSkinWeights.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "WeightHammer" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Copy skin weights" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Copy Skin" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Copy" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "copySkinWeight.png" 
+        -image1 "copySkinWeight.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "CopySkinWeightsOptions" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Reset skin cluster bind pose for selected objects." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Reset Skin" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Skin Reset" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "menuIconSkinning.png" 
+        -image1 "menuIconSkinning.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\ndef reset_skin_pose():\n    skinList = []\n    for obj in sel:\n        history = cmds.listHistory(obj, future=True) if cmds.objectType(obj, isType=\"joint\") else cmds.listHistory(obj)\n        skinList = cmds.ls(history, type=\"skinCluster\")\n        for skin in skinList:\n            nbInfl = len(cmds.listConnections(skin + '.matrix', destination=False))\n            offset = 0\n            for i in range(nbInfl):\n                while not cmds.getAttr(f\"{skin}.matrix[{i+offset}]\"):\n                    offset+=1\n                    if offset > 1000:\n                        raise Exception(\"Infinite loop detected, please warn the author of this script\")\n                i += offset\n                bindedJoint = cmds.listConnections(skin + '.matrix[' + str(i) + ']', destination=False)[0]\n                wInvMtx = cmds.getAttr(bindedJoint + '.worldInverseMatrix')\n                cmds.setAttr(skin + '.bindPreMatrix[' + str(i) + ']', wInvMtx, type='matrix')\n    if skinList:\n        cmds.inViewMessage( amg='<hl>Done !</hl>.', pos='botCenter', fade=True)\n\ndef reset_bind_pose():\n    dagPoses = cmds.ls(type=\"dagPose\")\n    cmds.delete(dagPoses)\n    cmds.dagPose(cmds.ls(type=\"joint\"), s=True, bp=True)\n\nsel = cmds.ls(sl=True, type=\"transform\")\nif sel:\n    reset_skin_pose()\n    reset_bind_pose()\nelse:\n    cmds.error(\"Please selet at least one skinned object.\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Export skin of selected geo to .json file" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Export Skin" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "fileSave.png" 
+        -image1 "fileSave.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.cmds as cmds\n\n\ndef get_skin_cluster(obj):\n    return cmds.ls(cmds.findDeformers(obj), type=\"skinCluster\")\n\n\ndef check_naming():\n    skel = cmds.ls(type=\"joint\")\n    listErrors = [bone.split(\"|\")[-1] for bone in skel if \"|\" in bone]\n    listErrors = list(set(listErrors))\n    if listErrors:\n        message = \"The followings bones has the same name than another bone :\\n\"\n        for bone in listErrors:\n            message += f\"\\n{bone}\"\n        cmds.confirmDialog(title=\"Problem\", message=message, button=\"OK\")\n        return False\n    return True\n\n\ndef export_selected_skins(pGeoList):\n    if not check_naming():\n        return\n\n    folder = cmds.fileDialog2(dialogStyle=1, fileMode=3)\n    folder = folder[0] if folder else None\n    for geo in pGeoList:\n        skinDeformer = get_skin_cluster(geo)\n        if skinDeformer:\n            cmds.deformerWeights(geo + \".json\", format=\"JSON\", path=folder, export=True,\n                                 deformer=str(skinDeformer[0]))\n        else:\n            cmds.confirmDialog(title=\"Problem\", message=f\"No skin cluster applied to {geo}. Export aborted.\",\n                               button=\"OK\")\n            return\n    cmds.confirmDialog(title=\"Good\", message=\"Done !\", button=\"OK\")\n\n\nsel = cmds.ls(sl=1, type=\"transform\")\nexport_selected_skins(sel) if sel else cmds.error(\"Please select at least one geo\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Import skin from .json file to selected geo" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Import Skin" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "fileOpen.png" 
+        -image1 "fileOpen.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.cmds as cmds\nimport json\nimport os\n\ndef get_skin_cluster(obj):\n    return cmds.ls(cmds.findDeformers(obj), type=\"skinCluster\")\n\n\ndef get_skinned_joints_from_json(file):\n    assert os.path.exists(file), f\"Wrong path for {file}\"\n    jsonData = json.load(open(file))\n    jointList = [weight[\"source\"] for weight in jsonData[\"deformerWeight\"][\"weights\"]]\n    return jointList\n\n\ndef import_selected_skins():\n    files = cmds.fileDialog2(fileFilter=\"*.json\", dialogStyle=1, fileMode=4)\n    if files:\n        listErrors = []\n        for f in files:\n            geoName = f.split(\".\")[-2].split(\"/\")[-1]\n            if geoName in cmds.ls(type=\"transform\"):\n                skinDeformer = get_skin_cluster(geoName)\n                if not skinDeformer:\n                    # shape = cmds.listRelatives(geoName, shapes=True)[0]\n                    skel = get_skinned_joints_from_json(f)\n                    cmds.skinCluster(skel, geoName, tsb=1)\n                    skinDeformer = get_skin_cluster(geoName)\n                    cmds.skinPercent(skinDeformer[0], geoName, normalize=True)\n                cmds.deformerWeights(f.split(\"/\")[-1], im=True, format=\"JSON\", method=\"index\", deformer=skinDeformer[0],\n                                     path=f.rsplit(\"/\", 1)[0])\n                cmds.skinPercent(skinDeformer[0], geoName, normalize=True)\n            else:\n                listErrors.append(geoName)\n        if listErrors:\n            message = \"The followings geos has not been found :\\n\"\n            for geo in listErrors:\n                message += f\"\\n{geo}\"\n            cmds.confirmDialog(title=\"Problem\", message=message, button=\"OK\")\n        else:\n            cmds.confirmDialog(title=\"Good\", message=\"Done !\", button=\"OK\")\n\nimport_selected_skins()\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    separator
+        -enable 1
+        -width 34
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Create a NURBS circle on the grid" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Circle" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "circle.png" 
+        -image1 "circle.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "circle -c 0 0 0 -nr 1 0 0 -sw 360 -r 5 -d 3 -ut 0 -tol 0.01 -s 8 -ch 1; objectMoveCommand" 
+        -sourceType "mel" 
+        -doubleClickCommand "CreateNURBSCircleOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Combine more than one curve into one" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Combine curves" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Merge" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "alignCurve.png" 
+        -image1 "alignCurve.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef merge_curves(pObjList: list):\n    group = cmds.group(n=\"mygroup1\", empty=True)\n\n    ## To set the pivot to the fisrt selected object, uncomment the following line:\n    # cmds.matchTransform(group, pObjList[0], pivots=True)\n\n    for obj in pObjList:\n        shapeList = cmds.listRelatives(obj, shapes=True, fullPath=True)\n        for shape in shapeList:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True)\n            cmds.parent(shape, group, shape=True, r=True)\n        cmds.delete(obj)\n\n    ## to move the new group to the center of the world, uncomment the following lines:\n    # cmds.move(0, 0, 0,group, rpr=True)\n    # cmds.makeIdentity(group, apply=True, t=True, r=True, s=True)\n\n    cmds.delete(group, constructionHistory=True)\n    cmds.select(group)\n    cmds.rename(group, pObjList[0])\n\n\nsel = cmds.ls(sl=1, type=\"transform\")\nmerge_curves(sel) if (sel and len(sel) >= 2) else cmds.error(\"Please select at least two curves\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Convert selected edges or mesh to curves" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Convert edge to curve" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "polyEdgeToCurves.png" 
+        -image1 "polyEdgeToCurves.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.cmds as cmds\n\n\ndef get_all_nurbs_isoparms(n):\n    u = [f\"{n}.u[{i}]\" for i in range(cmds.getAttr(n + \".spansU\") + 1)]\n    v = [f\"{n}.v[{i}]\" for i in range(cmds.getAttr(n + \".spansV\") + 1)]\n    return u + v\n\n\ndef edges_to_single_curve(pObjList: list):\n    all_main_curves = []\n    for shape in pObjList:\n        if cmds.nodeType(shape) == \"mesh\":\n            edges = cmds.ls(shape + \".e[*]\", fl=True)  # all edges\n        elif cmds.nodeType(shape) == \"nurbsSurface\":\n            edges = get_all_nurbs_isoparms(shape)\n        else:\n            continue\n\n        main_curve = None\n        for i, edge in enumerate(edges):\n            try:\n                if cmds.nodeType(shape) == \"mesh\":\n                    curves = cmds.polyToCurve(edge, form=2, degree=1, ch=False)\n                else:\n                    curves = cmds.duplicateCurve(edge, ch=False, local=True)\n                if i == 0:\n                    # first one becomes the main curve transform\n                    main_curve = curves[0]\n                else:\n                    # parent shape node under main curve\n                    shape_nodes = cmds.listRelatives(curves[0], shapes=True, f=True) or []\n                    cmds.parent(shape_nodes, main_curve, shape=True, r=True)\n                    # delete the extra transform\n                    cmds.delete(curves[0])\n            except Exception as e:\n                cmds.warning(\"Failed to convert edge {}: {}\".format(edge, e))\n        if main_curve:\n            if cmds.listRelatives(main_curve, parent=True):\n                main_curve = cmds.parent(main_curve, world=True)\n            main_curve = cmds.rename(main_curve, f\"mergedCurve_{shape.replace('Shape', '')}\")\n            # cmds.matchTransform(main_curve, shape,pivots=True)\n            all_main_curves.append(main_curve)\n    cmds.select(all_main_curves)\n\n\nsel = cmds.ls(sl=True, dag=True, shapes=True)\nedges_to_single_curve(sel) if sel else cmds.error(\"Please select an object.\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Increase curve thickness" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Increase curve thickness" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "paintFXtoNurbs.png" 
+        -image1 "paintFXtoNurbs.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef increase_line_width(pObjList: list):\n    for obj in pObjList:\n        shapeList = cmds.listRelatives(obj, shapes=True, fullPath=True)\n        for shape in shapeList:\n            if cmds.objectType(shape, isType=\"nurbsCurve\"):\n                width = cmds.getAttr(f\"{shape}.lineWidth\") + 1 or 2\n                cmds.setAttr(f\"{shape}.lineWidth\", width)\n\n\nsel = cmds.ls(sl=True, type=\"transform\", long=True)\nincrease_line_width(sel) if sel else cmds.error(\"Please select at least one curve\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Create a slider for face interface" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Create slider" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Slider" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "dollyCursor.png" 
+        -image1 "dollyCursor.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef create_slider():\n    ui = cmds.curve(d=True, p=[(-1/3,0,-1/3),(1+1/3, 0, -1/3), (1+1/3, 0, 1/3), (-1/3, 0, 1/3), (-1/3,0,-1/3)], k=[1, 2, 3, 4, 5])\n    ctrl = cmds.circle(nr=(0,1,0), r=0.2, constructionHistory=False)[0]\n    cmds.transformLimits(ctrl, tx=(0, 1), etx=(1, 1))\n    cmds.setAttr(f\"{ctrl}.ty\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.tz\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.rx\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.ry\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.rz\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sx\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sy\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sz\", lock=True, keyable=False, channelBox=False)\n    cmds.parent(ctrl, ui)\n    cmds.rotate(90,0,90, ui, os=True, fo=True)\n    cmds.select(ui)\n    cmds.rename(ctrl, \"ctrl_ui_to_rename\")\n    cmds.rename(ui, \"interface_ui_to_rename\")\n\ncreate_slider()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+        -mi "Create square slider" ( "from maya import cmds\n\n\nd = 1/3\ndef create_slider():\n    ui = cmds.curve(d=True, p=[(-1-d,0,-1-d),(1+d, 0, -1-d), (1+d, 0, 1+d), (-1-d, 0, 1+d), (-1-d,0,-1-d)], k=[1, 2, 3, 4, 5])\n    ctrl = cmds.circle(nr=(0,1,0), r=0.2, constructionHistory=False)[0]\n    cmds.transformLimits(ctrl, tx=(-1, 1), tz=(-1,1), etx=(1, 1), etz=(1,1))\n    cmds.setAttr(f\"{ctrl}.ty\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.rx\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.ry\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.rz\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sx\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sy\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sz\", lock=True, keyable=False, channelBox=False)\n    cmds.parent(ctrl, ui)\n    cmds.rotate(90,0,90, ui, os=True, fo=True)\n    cmds.select(ui)\n    cmds.rename(ctrl, \"ctrl_ui_to_rename\")\n    cmds.rename(ui, \"interface_ui_to_rename\")\n\ncreate_slider()" )
+        -mip 0
+        -mi "Create vertical slider" ( "from maya import cmds\n\n\nd = 1/3\ndef create_slider():\n    ui = cmds.curve(d=True, p=[(-1-d,0,-d),(1+d, 0, -d), (1+d, 0, d), (-1-d, 0, d), (-1-d ,0,-d)], k=[1, 2, 3, 4, 5])\n    ctrl = cmds.circle(nr=(0,1,0), r=0.2, constructionHistory=False)[0]\n    cmds.transformLimits(ctrl, tx=(-1, 1), etx=(1, 1))\n    cmds.setAttr(f\"{ctrl}.ty\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.tz\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.rx\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.ry\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.rz\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sx\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sy\", lock=True, keyable=False, channelBox=False)\n    cmds.setAttr(f\"{ctrl}.sz\", lock=True, keyable=False, channelBox=False)\n    cmds.parent(ctrl, ui)\n    cmds.rotate(90,0,90, ui, os=True, fo=True)\n    cmds.select(ui)\n    cmds.rename(ctrl, \"ctrl_ui_to_rename\")\n    cmds.rename(ui, \"interface_ui_to_rename\")\n\ncreate_slider()" )
+        -mip 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "It creates a controler with a parent constraint to the selected object" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Create control" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Setup" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "subdiv.svg" 
+        -image1 "subdiv.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.parentConstraint(newCtrl, bone, maintainOffset=True)\n        if parent:\n            cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+        -mi "Use Orient Constraint" ( "import maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    if not pObjList:\n        cmds.warning(\"Please select at least one object to control.\")\n        return\n\n    for bone in pObjList:\n        # Create controls and groups\n        newCtrl = cmds.circle(name=bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"control\"), normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=bone.replace(\"jnt\", \"grp\").replace(\"joint\", \"group\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.orientConstraint(newCtrl, bone, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" )
+        -mip 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Reset the offset of the constraint on (move your object, then select your object or the constraint, and execute)." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Update Constraint" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Const" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "menuIconReset.png" 
+        -image1 "menuIconReset.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\nsel = cmds.ls(sl=1)\n\ndef update_offset_constraint(sel):\n    if not sel:cmds.warning(\"Please select an constrained object or the constraint you want to update.\");return\n    constraint = list(set(cmds.ls(cmds.listConnections(sel, destination=False), type=\"constraint\")))\n    if not constraint:cmds.warning(\"No constraint applied to the object. Please select a another constrained objet or constraint.\");return\n    for const in constraint:\n        constType = cmds.nodeType(const)\n        function = getattr(cmds, constType)\n        driverList= function(const, q=True, targetList=True)\n        if not driverList:cmds.warning(\"The constraint is driven by nothing.\");return\n        weightList = function(driverList, sel, q=True, w=True)\n        weightList = weightList if isinstance(weightList, list) else [weightList]\n        for driver, weight in zip(driverList, weightList):\n            function(driver, sel, e=True, w=1-weight)\n\nupdate_offset_constraint(sel)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+        -mi "Switch Weight Value" ( "from maya import cmds\nsel = cmds.ls(sl=1)\n\ndef update_offset_constraint(sel):\n    if not sel:cmds.warning(\"Please select an constrained object or the constraint you want to update.\");return\n    constraint = list(set(cmds.ls(cmds.listConnections(sel, destination=False), type=\"constraint\")))\n    if not constraint:cmds.warning(\"No constraint applied to the object. Please select a another constrained objet or constraint.\");return\n    for const in constraint:\n        constType = cmds.nodeType(const)\n        function = getattr(cmds, constType)\n        driverList= function(const, q=True, targetList=True)\n        if not driverList:cmds.warning(\"The constraint is driven by nothing.\");return\n        weight = function(driverList, sel, q=True, w=True)\n        function(driverList, sel, e=True, w=1-weight)\n\nupdate_offset_constraint(sel)" )
+        -mip 0
+    ;
+    separator
+        -enable 1
+        -width 34
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Create proxy planes (for selected fingers and limbs)" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Proxy Planes" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "imagePlane.svg" 
+        -image1 "imagePlane.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.cmds as cmds\n\ntry:\n    from PySide2 import QtWidgets, QtCore\nexcept ModuleNotFoundError:\n    from PySide6 import QtWidgets, QtCore\n\n\ndef create_normal_shader(*planes: str):\n    for obj in planes:\n        # create shadingEngine\n        shader_name = \"proxy_plane_shader\"\n        shader = cmds.ls(shader_name, type=\"shadingEngine\")\n        if not shader:\n            shader = cmds.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader_name)\n        if isinstance(shader, list):\n            shader = shader[0]\n\n        # create bump3d\n        bump_name = \"proxy_plane_bump3d\"\n        bump = cmds.ls(bump_name, type=\"bump3d\")\n        if not bump:\n            bump = cmds.shadingNode(\"bump3d\", asUtility=True, asShader=True, name=bump_name)\n        if isinstance(bump, list):\n            bump = bump[0]\n\n        # connect bump3d to shader\n        src = bump + \".outNormal\"\n        dst = shader + \".surfaceShader\"\n        shaderConnections = cmds.listConnections(dst, source=True, destination=False)\n        if not shaderConnections or bump not in shaderConnections:\n            cmds.connectAttr(src, dst, force=True)\n\n        # connect shader to obj\n        cmds.sets(obj, edit=True, forceElement=shader)\n\n\ndef build_proxy_planes(joints, size=1, up_axis=1):\n    if not joints:\n        cmds.warning(\"Select at least one joint.\")\n        return\n    planes = []\n    nodes = []\n    jntSizeFactor = cmds.jointDisplayScale(q=True)\n    multiplier = size\n    axis = {0: [1, 0, 0], 1: [0, 1, 0], 2: [0, 0, 1]}[up_axis]\n    length = None\n    for i, jnt in enumerate(joints):\n        plane_name = f\"proxy_plane_{jnt.split('|')[-1]}\"\n        plane, planeParams = cmds.nurbsPlane(u=1, v=1, axis=axis, d=1, ch=True, name=plane_name)\n        multNode = cmds.createNode(\"multiplyDivide\")\n        cmds.setAttr(f\"{multNode}.input2X\", 0.5)\n        jntSize = cmds.getAttr(f\"{jnt}.radius\")\n        cmds.connectAttr(f\"{planeParams}.width\", f\"{multNode}.input1X\")\n        cmds.connectAttr(f\"{multNode}.outputX\", f\"{planeParams}.pivotX\")\n        ratio = jntSizeFactor * jntSize * multiplier\n        # set length and width\n        if len(joints) > i + 1:\n            cmds.connectAttr(f\"{joints[i + 1]}.translateX\", f\"{planeParams}.width\")\n            length = cmds.getAttr(f\"{joints[i + 1]}.translateX\")\n            cmds.setAttr(f\"{planeParams}.lengthRatio\", ratio / length)\n        else:\n            cmds.setAttr(f\"{planeParams}.width\", length or (5 * ratio) / jntSizeFactor)\n            cmds.setAttr(f\"{planeParams}.lengthRatio\", ratio / length if length else multiplier * 0.2 * jntSizeFactor)\n        cmds.matchTransform(plane, jnt)\n        create_normal_shader(plane)\n        cmds.setAttr(f\"{plane}.overrideEnabled\", True)\n        cmds.setAttr(f\"{plane}.overrideDisplayType\", 2)\n        newPlane = cmds.parent(plane, jnt)[0]\n        planes.append(newPlane)\n        nodes.append(multNode)\n        nodes.append(planeParams)\n\n    # add to a new objectSet for easier selection\n    proxySet = cmds.ls(\"proxyPlaneSet\", type=\"objectSet\")\n    if not proxySet:\n        proxySet = cmds.sets(name=\"proxyPlaneSet\")\n    proxySet = proxySet[0] if isinstance(proxySet, list) else proxySet\n    cmds.sets(planes, add=proxySet)\n    cmds.sets(nodes, add=proxySet)\n    bump_node = cmds.ls(\"proxy_plane_bump3d\", type=\"bump3d\")\n    if bump_node:\n        cmds.sets(bump_node, add=proxySet)\n    cmds.select(planes)\n    cmds.inViewMessage(amg=f'<hl>Created {len(planes)} proxy planes</hl>', pos='midCenter', fade=True)\n    return planes\n\n\nclass ProxyPlaneWindow(QtWidgets.QWidget):\n    def __init__(self):\n        super().__init__()\n        self.setWindowTitle(\"Create Proxy Planes\")\n        self.setMinimumWidth(300)\n        self.last_slider_val = 1\n        self.planes_created = False\n        self.selection = []\n        self._create_layout()\n        self._connect_signals()\n        self._store_selection()\n        self.show()\n\n    def _store_selection(self):\n        self.selection = cmds.ls(selection=True, type=\"joint\")\n        if not self.selection:\n            proxyPlanes = []\n            for obj in cmds.ls(selection=True, type=\"transform\"):\n                for shape in cmds.listRelatives(obj, shapes=True):\n                    if cmds.objectType(shape) == \"nurbsSurface\":\n                        proxyPlanes.append(obj)\n            if proxyPlanes:\n                cmds.select(proxyPlanes)\n                self.planes_created = True\n            return\n\n    def _create_layout(self):\n        main_layout = QtWidgets.QVBoxLayout(self)\n        form_layout = QtWidgets.QFormLayout()\n        self.qcb_axis = QtWidgets.QComboBox()\n        self.qcb_axis.addItems(['x', 'y', 'z'])\n        self.qcb_axis.setCurrentText('y')\n        size_container = QtWidgets.QHBoxLayout()\n        self.qsl_size = QtWidgets.QSlider(QtCore.Qt.Horizontal)\n        self.qsl_size.setMinimum(-100)\n        self.qsl_size.setMaximum(100)\n        self.qsl_size.setValue(self.last_slider_val)\n        size_container.addWidget(self.qsl_size)\n        self.qpb_create = QtWidgets.QPushButton(\"Create Proxy Planes\")\n        form_layout.addRow(\"Up Axis:\", self.qcb_axis)\n        form_layout.addRow(\"Size:\", size_container)\n        main_layout.addLayout(form_layout)\n        main_layout.addWidget(self.qpb_create)\n\n    def _connect_signals(self):\n        self.qpb_create.clicked.connect(self.create_planes)\n        self.qsl_size.valueChanged.connect(self._handle_slider_drag)\n        self.qsl_size.sliderReleased.connect(self._reset_slider)\n\n    def _handle_slider_drag(self, current_val):\n        if not self.planes_created or current_val == self.last_slider_val:\n            return\n        is_increasing = current_val > self.last_slider_val\n        self.last_slider_val = current_val\n        up_axis_idx = self.qcb_axis.currentIndex()\n        scale_attr = \"scaleY\" if up_axis_idx == 2 else \"scaleZ\"\n        sel = cmds.ls(selection=True)\n        if sel:\n            scale_factor = 1.05 if is_increasing else 0.95\n            for obj in sel:\n                if \"proxy_plane\" in obj:\n                    val = cmds.getAttr(f\"{obj}.{scale_attr}\")\n                    cmds.setAttr(f\"{obj}.{scale_attr}\", val * scale_factor)\n\n    def _reset_slider(self):\n        self.qsl_size.blockSignals(True)\n        self.qsl_size.setValue(1)\n        self.qsl_size.blockSignals(False)\n        self.last_slider_val = 1\n\n    def create_planes(self):\n        cmds.undoInfo(chunkName=\"before proxy planes\", openChunk=True)\n        if not self.selection:\n            cmds.warning(\"Select at least one joint.\")\n            return\n        up_axis = self.qcb_axis.currentIndex()\n        size = self.qsl_size.value()\n        build_proxy_planes(self.selection, size, up_axis=up_axis)\n        # Enable slider scaling logic now that planes exist\n        self.planes_created = True\n        cmds.undoInfo(closeChunk=True)\n\n\ntool = ProxyPlaneWindow()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Custom Note Tool to store infos about the current scene." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Maya Note Tool" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Note" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "text.png" 
+        -image1 "text.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "try:\n    from PySide2 import QtWidgets, QtCore\nexcept ModuleNotFoundError:\n    from PySide6 import QtWidgets, QtCore\nfrom shiboken2 import wrapInstance\nimport maya.OpenMayaUI as omui\nimport maya.cmds as cmds\n\ndef maya_main_window():\n    main_window_ptr = omui.MQtUtil.mainWindow()\n    return wrapInstance(int(main_window_ptr), QtWidgets.QWidget)\n\nclass MainWindow(QtWidgets.QMainWindow):\n    def __init__(self, parent=None):\n        super(MainWindow, self).__init__(parent)\n        self.setWindowFlags(QtCore.Qt.Tool)\n\n        self.setWindowTitle('Maya Note Tool')\n        self.resize(300, 300)\n        self.qpte_infos = QtWidgets.QPlainTextEdit(self)\n        self.setCentralWidget(self.qpte_infos)\n\n        self.node_name:str = \"myMayaNote\"\n        self.attr_name:str = \"userNote\"\n        \n        currentContent = self.get_content()\n        self.qpte_infos.setPlainText(currentContent)\n        self.qpte_infos.textChanged.connect(self.update_note)\n\n    def update_note(self) -> None:\n        currentText = self.qpte_infos.toPlainText()\n        self.store_note(currentText)\n\n    def store_note(self, pText:str) -> None:\n        nodeNote = self.get_node_note(True)\n        if not cmds.attributeQuery(self.attr_name, node=nodeNote[0], exists=True):\n            cmds.addAttr(nodeNote[0], ln=self.attr_name, dataType=\"string\")\n        cmds.setAttr(f\"{nodeNote[0]}.{self.attr_name}\", pText, type='string')\n\n    def get_content(self) -> str:\n        nodeNote = self.get_node_note()\n        if nodeNote:\n            content = cmds.getAttr(f\"{nodeNote[0]}.{self.attr_name}\")\n            return content if content is not None else \"\"\n\n    def get_node_note(self, pCreate:bool=False) -> list:\n        nodeNote = cmds.ls(self.node_name, type=\"network\")\n        if nodeNote:\n            return nodeNote\n        else:\n            if pCreate:\n                return [cmds.createNode(\"network\", name=self.node_name)]\n\nif __name__ == \"__main__\":\n    try:\n        mayaNoteTool.deleteLater()\n    except NameError as e:\n        pass\n    mayaNoteTool = MainWindow(parent=maya_main_window())\n    mayaNoteTool.show()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Tool that mirror SDK (for footroll setup for exemple)" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Mirror SDK" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "SDK" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "setDrivenKeyframe.png" 
+        -image1 "setDrivenKeyframe.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\ntry:\n    from PySide2 import QtWidgets, QtCore\nexcept ModuleNotFoundError:\n    from PySide6 import QtWidgets, QtCore\n\n\ndef group_by(main_list: list, size: int = 2) -> list:\n    \"\"\"This function returns a list with nested lists by length of param 'size'.\"\"\"\n    return [main_list[i:i + size] for i in range(0, len(main_list), size)]\n\n\nclass MirrorSDK(QtWidgets.QWidget):\n    def __init__(self):\n        super().__init__()\n        self.left_side = \"left\"\n        self.right_side = \"right\"\n        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)\n        self.setWindowTitle(\"Mirror SDK\")\n        self.create_layout()\n        self.connect_buttons()\n        self.setMinimumWidth(230)\n        self.show()\n\n    def create_layout(self):\n        ql_left = QtWidgets.QLabel(\"Left\")\n        self.qle_left = QtWidgets.QLineEdit(self.left_side)\n        ql_right = QtWidgets.QLabel(\"Right\")\n        self.qle_right = QtWidgets.QLineEdit(self.right_side)\n        self.qpb_mirror = QtWidgets.QPushButton(\"Mirror SDK\")\n        qvl_layout = QtWidgets.QVBoxLayout()\n        qhl_layout1 = QtWidgets.QHBoxLayout()\n        qhl_layout2 = QtWidgets.QHBoxLayout()\n        qhl_layout1.addWidget(ql_left)\n        qhl_layout1.addWidget(self.qle_left)\n        qhl_layout2.addWidget(ql_right)\n        qhl_layout2.addWidget(self.qle_right)\n        qvl_layout.addLayout(qhl_layout1)\n        qvl_layout.addLayout(qhl_layout2)\n        qvl_layout.addWidget(self.qpb_mirror)\n        self.setLayout(qvl_layout)\n\n    def connect_buttons(self):\n        self.qpb_mirror.clicked.connect(self.mirror)\n\n    def mirror(self):\n        self.left_side = self.qle_left.text()\n        self.right_side = self.qle_right.text()\n        sel = cmds.ls(sl=True)\n        attrs = cmds.channelBox(\"mainChannelBox\", q=True, sma=True)\n        if sel and attrs:\n            for obj in sel:\n                for attr in attrs:\n                    self.iter_nodes(f\"{obj}.{attr}\")\n            self.close()\n        else:\n            cmds.warning(\"Please select a control and one or more attribute\")\n\n    def get_or_duplicate(self, name: str) -> str:\n        \"\"\"Return a mirrored or duplicated node.\"\"\"\n        if cmds.ls(name, type=\"transform\"):\n            return name.replace(self.left_side, self.right_side, 1)\n        existing = cmds.ls(name + \"_copy\")\n        if existing:\n            return existing[0]\n        return cmds.duplicate(name, name=name + \"_copy\")[0]\n\n    def iter_nodes(self, src):\n        \"\"\"Recursively copy and reconnect attribute pairs.\"\"\"\n        connections = cmds.listConnections(src, plugs=True, source=False, destination=True, connections=True) or []\n        for a, b in group_by(connections, 2):\n            aName, aAttr = a.split(\".\")\n            bName, bAttr = b.split(\".\")\n            aCopy = self.get_or_duplicate(aName)\n            bCopy = self.get_or_duplicate(bName)\n            cmds.connectAttr(f\"{aCopy}.{aAttr}\", f\"{bCopy}.{bAttr}\", force=True)\n            if not cmds.ls(bName, type=\"transform\"):\n                self.iter_nodes(bName)\n\ntool = MirrorSDK()\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Setup pickwalking for all controllers (nurbsCurve) of the scene." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Setup Pickwalk" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "PW" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "menuIconSelectFilter.png" 
+        -image1 "menuIconSelectFilter.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.cmds as cmds\n\ndef tag_hierarchy_controllers():\n    shapes = cmds.ls(type='nurbsCurve', long=True) or []\n    nurbs_transforms = list(set(cmds.listRelatives(shapes, parent=True, fullPath=True) or []))\n\n    if not nurbs_transforms:\n        cmds.error(\"No nurbsCurve controllers found.\", n=True)\n        return\n\n    for node in nurbs_transforms:\n        # Tag the transform as a controller\n        # Creating it if it doesn't exist\n        cmds.controller(node)\n        \n        # 2. Find the nearest ancestor that is also a controller\n        # We climb the hierarchy to skip over groups like 'grp_body'\n        curr_parent = cmds.listRelatives(node, parent=True, fullPath=True)\n        \n        while curr_parent:\n            parent_node = curr_parent[0]\n            \n            if parent_node in nurbs_transforms:\n                # Found a controller parent. Link it and stop climbing.\n                cmds.controller(node, parent_node, p=True)\n                print(f\"Linked Controller: {node.split('|')[-1]} -> Parent: {parent_node.split('|')[-1]}\")\n                break\n            \n            # If current parent isn't a controller, keep going up\n            curr_parent = cmds.listRelatives(parent_node, parent=True, fullPath=True)\n\ntag_hierarchy_controllers()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    separator
+        -enable 1
+        -width 34
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Change curve shape color" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - Red" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Red" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 1 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef color_obj(pObjList: list, pColorIndex: int):\n    for obj in pObjList:\n        objType = cmds.objectType(obj)\n        if objType == \"joint\":\n            cmds.setAttr(obj + \".overrideEnabled\", 1)\n            cmds.setAttr(obj + \".overrideColor\", pColorIndex)\n        else:\n            objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n            for shape in objShape:\n                cmds.setAttr(shape + \".overrideEnabled\", 1)\n                cmds.setAttr(shape + \".overrideColor\", pColorIndex)\n\n\nsel = cmds.ls(sl=1)\ncolor_obj(sel, 13) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Change curve shape color" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - Green" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Green" 
+        -overlayLabelColor 1 1 1 
+        -overlayLabelBackColor 0 1 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef color_obj(pObjList: list, pColorIndex: int):\n    for obj in pObjList:\n        objType = cmds.objectType(obj)\n        if objType == \"joint\":\n            cmds.setAttr(obj + \".overrideEnabled\", 1)\n            cmds.setAttr(obj + \".overrideColor\", pColorIndex)\n        else:\n            objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n            for shape in objShape:\n                cmds.setAttr(shape + \".overrideEnabled\", 1)\n                cmds.setAttr(shape + \".overrideColor\", pColorIndex)\n\n\nsel = cmds.ls(sl=1)\ncolor_obj(sel, 27) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Change curve shape color" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - Blue" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Blue" 
+        -overlayLabelColor 1 1 1 
+        -overlayLabelBackColor 0 0.576917 1 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef color_obj(pObjList: list, pColorIndex: int):\n    for obj in pObjList:\n        objType = cmds.objectType(obj)\n        if objType == \"joint\":\n            cmds.setAttr(obj + \".overrideEnabled\", 1)\n            cmds.setAttr(obj + \".overrideColor\", pColorIndex)\n        else:\n            objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n            for shape in objShape:\n                cmds.setAttr(shape + \".overrideEnabled\", 1)\n                cmds.setAttr(shape + \".overrideColor\", pColorIndex)\n\n\nsel = cmds.ls(sl=1)\ncolor_obj(sel, 18) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Change curve shape color" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - Yellow" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Yellow" 
+        -overlayLabelColor 1 1 1 
+        -overlayLabelBackColor 1 1 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef color_obj(pObjList: list, pColorIndex: int):\n    for obj in pObjList:\n        objType = cmds.objectType(obj)\n        if objType == \"joint\":\n            cmds.setAttr(obj + \".overrideEnabled\", 1)\n            cmds.setAttr(obj + \".overrideColor\", pColorIndex)\n        else:\n            objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n            for shape in objShape:\n                cmds.setAttr(shape + \".overrideEnabled\", 1)\n                cmds.setAttr(shape + \".overrideColor\", pColorIndex)\n\n\nsel = cmds.ls(sl=1)\ncolor_obj(sel, 17) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Change curve shape color" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - Pink" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Pink" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 1 0.4705 0.9592 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef color_obj(pObjList: list, pColorIndex: int):\n    for obj in pObjList:\n        objType = cmds.objectType(obj)\n        if objType == \"joint\":\n            cmds.setAttr(obj + \".overrideEnabled\", 1)\n            cmds.setAttr(obj + \".overrideColor\", pColorIndex)\n        else:\n            objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n            for shape in objShape:\n                cmds.setAttr(shape + \".overrideEnabled\", 1)\n                cmds.setAttr(shape + \".overrideColor\", pColorIndex)\n\n\nsel = cmds.ls(sl=1)\ncolor_obj(sel, 20) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Change curve shape color" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - White" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "White" 
+        -overlayLabelColor 0 0 0 
+        -overlayLabelBackColor 1 1 1 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef color_obj(pObjList: list, pColorIndex: int):\n    for obj in pObjList:\n        objType = cmds.objectType(obj)\n        if objType == \"joint\":\n            cmds.setAttr(obj + \".overrideEnabled\", 1)\n            cmds.setAttr(obj + \".overrideColor\", pColorIndex)\n        else:\n            objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n            for shape in objShape:\n                cmds.setAttr(shape + \".overrideEnabled\", 1)\n                cmds.setAttr(shape + \".overrideColor\", pColorIndex)\n\n\nsel = cmds.ls(sl=1)\ncolor_obj(sel, 16) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Deactivate color override" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - None" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "None" 
+        -overlayLabelColor 1 1 1 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef uncolor_obj(pObjList: list):\n    for obj in pObjList:\n        objType = cmds.objectType(obj)\n        if objType == \"joint\":\n            cmds.setAttr(obj + \".overrideEnabled\", 0)\n        else:\n            objShape = cmds.listRelatives(obj, fullPath=True) or []\n            for shape in objShape:\n                cmds.setAttr(shape + \".overrideEnabled\", 0)\n\n\nsel = cmds.ls(sl=1)\nuncolor_obj(sel) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Switch Template On/Off" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Curve Color - None" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Template" 
+        -overlayLabelColor 1 1 1 
+        -overlayLabelBackColor 0.602 0.602 0.602 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef template_obj(pObjList: list):\n    for obj in pObjList:\n        objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for shape in objShape:\n            templateState = cmds.getAttr(shape + \".template\")\n            cmds.setAttr(shape + \".template\", 1-templateState)\n\n\nsel = cmds.ls(sl=1)\ntemplate_obj(sel) if sel else cmds.error(\"Please select at least one nurbsCurve\", n=True)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+
+} 
