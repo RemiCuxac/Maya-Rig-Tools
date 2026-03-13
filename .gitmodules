@@ -17,3 +17,9 @@
 [submodule "Maya-Transform-Checker"]
 	path = tools/Transform-Checker
 	url = https://github.com/RemiCuxac/Maya-Transform-Checker
+[submodule "Interactive-Controls-Creator"]
+	path = tools/Interactive-Controls-Creator
+	url = https://github.com/RemiCuxac/Interactive-Controls-Creator
+[submodule "Mirror-Set-Driven-Keys"]
+	path = tools/Mirror-Set-Driven-Keys
+	url = https://github.com/RemiCuxac/Mirror-Set-Driven-Keys
