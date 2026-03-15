@@ -6,7 +6,9 @@ from maya.api import OpenMaya as om
 
 def get_bind_mat(obj):
     if cmds.objectType(obj) == "joint":
-        if skinList := list(set(cmds.ls(cmds.listConnections(f"{obj}.worldMatrix[0]", type="skinCluster", p=True)))):
+        # TODO: use cmds.deformableShape() instead of cmds.listConnections) ?
+        skinList = list(set(cmds.ls(cmds.listConnections(f"{obj}.worldMatrix[0]", type="skinCluster", p=True))))
+        if skinList:
             bindPreMat = cmds.getAttr(skinList[0].replace("matrix", "bindPreMatrix"))
             return om.MMatrix(bindPreMat).inverse()
     return None

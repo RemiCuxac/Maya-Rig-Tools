@@ -6,7 +6,7 @@ target = sel[1]
 source = sel[0]
 
 
-def get_orig_shape(transform: str):
+def get_shape_orig(transform: str):
     shapeOrig = cmds.deformableShape(transform, originalGeometry=True)
     if shapeOrig != [""]:
         shapeOrig = shapeOrig[0].split(".")[0]
@@ -15,7 +15,7 @@ def get_orig_shape(transform: str):
     return shapeOrig
 
 
-targetShape = get_orig_shape(target)
-sourceShape = get_orig_shape(source)
+targetShape = get_shape_orig(target)
+sourceShape = get_shape_orig(source)
 
 cmds.connectAttr(sourceShape + ".outMesh", targetShape + ".inMesh", force=True)
