@@ -24,7 +24,6 @@ def get_weights(pGeo, pSkinCluster) -> dict:
 
 
 def merge_skins(*args) -> dict:
-    argsCount = len(args)
     mergedDict = {}
     for skinDict in args:
         print(skinDict)

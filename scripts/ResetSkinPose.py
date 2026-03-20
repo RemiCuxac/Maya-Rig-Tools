@@ -6,14 +6,9 @@ def reset_skin_pose():
         history = cmds.listHistory(obj, future=True) if cmds.objectType(obj, isType="joint") else cmds.listHistory(obj)
         skinList = cmds.ls(history, type="skinCluster")
         for skin in skinList:
-            nbInfl = len(cmds.listConnections(skin + '.matrix', destination=False))
-            offset = 0
-            for i in range(nbInfl):
-                while not cmds.getAttr(f"{skin}.matrix[{i+offset}]"):
-                    offset+=1
-                    if offset > 1000:
-                        raise Exception("Infinite loop detected, please warn the author of this script")
-                i += offset
+            plugs = cmds.listAttr(f"{skin}.matrix", multi=True) or []
+            indices = [int(p.split('[')[-1][:-1]) for p in plugs]
+            for i in indices:
                 bindedJoint = cmds.listConnections(skin + '.matrix[' + str(i) + ']', destination=False)[0]
                 wInvMtx = cmds.getAttr(bindedJoint + '.worldInverseMatrix')
                 cmds.setAttr(skin + '.bindPreMatrix[' + str(i) + ']', wInvMtx, type='matrix')

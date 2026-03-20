@@ -4,7 +4,7 @@ from maya import cmds
 def create_loc_from_gizmo(pObjList: list):
     prevObjName = ""
     if not pObjList:
-        obj = cmds.spaceLocator(name = "locator_01")
+        cmds.spaceLocator(name = "locator_01")
         return
     for obj in pObjList:
         objName = obj.split('|')[-1].split('.')[0]

@@ -55,19 +55,22 @@ def go_to_bind_pose(obj):
         cmds.xform(obj, ws=True, t=trans, ro=[math.degrees(angle) for angle in rot], s=scale)
 
 
+def process_bind_pose(obj_list:list):
+    for obj in obj_list:
+        if cmds.objectType(obj, isType="joint"):
+            # Process from parent to child
+            hierarchy = [obj] + (cmds.listRelatives(obj, allDescendents=True, fullPath=True, type="joint") or [])
+            hierarchy.sort(key=len)
+            for jnt in hierarchy:
+                go_to_bind_pose(jnt)
+        elif cmds.objectType(obj, isType="transform"):
+            shape = cmds.listRelatives(obj, shapes=True, noIntermediate=True)
+            if cmds.objectType(shape) == "mesh":  # process for geos
+                skin = cmds.listConnections(shape, type="skinCluster")
+                dagPose1 = cmds.listConnections(skin, type="dagPose")
+                cmds.dagPose(obj, dagPose1, r=True, g=True)
+            elif cmds.objectType(shape) == "nurbsCurve":  # process for controllers
+                go_to_bind_pose(obj)
+
 sel = cmds.ls(sl=1, long=True)
-for obj in sel:
-    if cmds.objectType(obj, isType="joint"):
-        # Process from parent to child
-        hierarchy = [obj] + (cmds.listRelatives(obj, allDescendents=True, fullPath=True, type="joint") or [])
-        hierarchy.sort(key=len)
-        for jnt in hierarchy:
-            go_to_bind_pose(jnt)
-    elif cmds.objectType(obj, isType="transform"):
-        shape = cmds.listRelatives(obj, shapes=True, noIntermediate=True)
-        if cmds.objectType(shape) == "mesh":  # process for geos
-            skin = cmds.listConnections(shape, type="skinCluster")
-            dagPose1 = cmds.listConnections(skin, type="dagPose")
-            cmds.dagPose(obj, dagPose1, r=True, g=True)
-        elif cmds.objectType(shape) == "nurbsCurve":  # process for controlers
-            go_to_bind_pose(obj)
+process_bind_pose(sel)

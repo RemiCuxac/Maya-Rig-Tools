@@ -1,6 +1,6 @@
 """
 This script is used to replace shapes. The first curve selected will replace the second one.
-This script isn't compatible for constraints and other connections. It just parent things and rename.
+This script isn't compatible for constraints and other connections. It just parents things and rename.
 """
 import maya.cmds as cmds
 

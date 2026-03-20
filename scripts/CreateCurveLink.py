@@ -1,9 +1,9 @@
 from maya import cmds
 
-def create_curve_link_from_controlers(pObjList: list = None, pParentOfCrv: str = None, pName: str = None,
-                                      pSuffix: str = "_crv_link"):
+def create_curve_link_from_controllers(pObjList: list = None, pParentOfCrv: str = None, pName: str = None,
+                                       pSuffix: str = "_crv_link"):
     """
-    This script create a link from two controlers with a curve
+    This script create a link from two controllers with a curve
     """
     if not pObjList:
         pObjList = cmds.ls(sl=1)
@@ -34,7 +34,7 @@ def create_curve_link_from_controlers(pObjList: list = None, pParentOfCrv: str =
         curveName = f"{pName or ctrl2}{pSuffix or ''}"
         cmds.rename(curve1, curveName)
     else:
-        raise Exception("Error, please select 2 controlers")
+        raise Exception("Error, please select 2 controllers")
 
 sel = cmds.ls(sl=True)
-create_curve_link_from_controlers(sel)
+create_curve_link_from_controllers(sel)

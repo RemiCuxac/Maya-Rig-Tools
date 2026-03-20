@@ -8,12 +8,12 @@ def group(pObjList: list):
     for obj in pObjList:
         objName = obj.split("|")[-1]
         parent = cmds.listRelatives(obj, parent=True, fullPath=True)
-        group = cmds.group(empty=True)
-        cmds.matchTransform(group, obj)
-        cmds.parent(obj, group)
+        group_obj = cmds.group(empty=True)
+        cmds.matchTransform(group_obj, obj)
+        cmds.parent(obj, group_obj)
         if parent:
-            cmds.parent(group, parent)
-        cmds.rename(group, f"grp_{objName}")
+            cmds.parent(group_obj, parent)
+        cmds.rename(group_obj, f"grp_{objName}")
 
 
 sel = cmds.ls(sl=1, long=True)

@@ -3,7 +3,6 @@ global proc shelf_Rigging_Custom () {
     global string $gBuffStr0;
     global string $gBuffStr1;
 
-
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
@@ -14,28 +13,28 @@ global proc shelf_Rigging_Custom () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "Show Node Editor" 
+        -annotation "Show Node Editor"
         -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Node Editor" 
+        -backgroundColor 0 0 0
+        -highlightColor 0.321569 0.521569 0.65098
+        -align "center"
+        -label "Node Editor"
         -labelOffset 0
         -rotation 0
         -flipX 0
         -flipY 0
         -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "Nodes" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "dagNode.svg" 
-        -image1 "dagNode.svg" 
-        -style "iconOnly" 
+        -font "plainLabelFont"
+        -imageOverlayLabel "Nodes"
+        -overlayLabelColor 0.8 0.8 0.8
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5
+        -image "dagNode.svg"
+        -image1 "dagNode.svg"
+        -style "iconOnly"
         -marginWidth 0
         -marginHeight 1
-        -command "NodeEditorWindow" 
-        -sourceType "mel" 
+        -command "NodeEditorWindow"
+        -sourceType "mel"
         -commandRepeatable 1
         -flat 1
     ;
@@ -663,7 +662,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "import maya.cmds as cmds\n\n\ndef key_rotate(pBone: str):\n    cmds.setKeyframe(pBone, attribute='rotateX', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateY', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateZ', t=cmds.currentTime(query=True))\n\n\ndef get_rotations(axis):\n    lRotationX = [(90, 0, 0), (-180, 0, 0), (90, 0, 0)]\n    lRotationY = [(0, 90, 0), (0, -180, 0), (0, 90, 0)]\n    lRotationZ = [(0, 0, 90), (0, 0, -180), (0, 0, 90)]\n\n    if axis == \"X\":\n        return lRotationX\n    elif axis == \"Y\":\n        return lRotationY\n    elif axis == \"Z\":\n        return lRotationZ\n    return None\n\n\ndef process_all_bones(pBone: str):\n    # Apply the keyframe and store the current rotation\n    key_rotate(pBone)\n\n    # Iterate through each axis and set the keyframes for the bone\n    for axis in ['X', 'Y', 'Z']:\n        rotations = get_rotations(axis)\n        for rotation in rotations:\n            cmds.currentTime(cmds.currentTime(query=True) + 1)\n            cmds.rotate(rotation[0], rotation[1], rotation[2], pBone, relative=True, componentSpace=True)\n            key_rotate(pBone)\n\n    # Recursively process all child bones\n    children = cmds.listRelatives(pBone, children=True, fullPath=True) or []\n    for child in children:\n        process_all_bones(child)\n\n\n# Call the process_all_bones function for each root joint in the scene\nroot_joints = cmds.ls(sl=1, type=\"joint\", l=True)\nif len(root_joints) > 2:\n    cmds.error(\"Maybe you have selected more than a root, please proceed one root at time to avoid long calculation\", n=True)\nelif not root_joints:\n    cmds.error(\"Please select a joint of your skeleton.\", n=True)\nelse:\n    cmds.currentUnit(time=\"6fps\")\n    cmds.refresh(suspend=True)\n    for joint in root_joints:\n        process_all_bones(joint)\n    current_frame = cmds.currentTime(query=True)\n    cmds.playbackOptions(maxTime=current_frame, animationEndTime=current_frame)\n    cmds.currentUnit(time=\"30fps\")\n    cmds.refresh(suspend=False)\n" 
+        -command "\"\"\"\nThis script allows user to create a range of motion on a selected joint and its hierarchy.\nUsage:\n    Select one joint and run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef key_rotate(pBone: str):\n    cmds.setKeyframe(pBone, attribute='rotateX', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateY', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateZ', t=cmds.currentTime(query=True))\n\n\ndef get_rotations(axis):\n    lRotationX = [(90, 0, 0), (-180, 0, 0), (90, 0, 0)]\n    lRotationY = [(0, 90, 0), (0, -180, 0), (0, 90, 0)]\n    lRotationZ = [(0, 0, 90), (0, 0, -180), (0, 0, 90)]\n\n    if axis == \"X\":\n        return lRotationX\n    elif axis == \"Y\":\n        return lRotationY\n    elif axis == \"Z\":\n        return lRotationZ\n    return None\n\n\ndef process_all_bones(pBone: str):\n    # Apply the keyframe and store the current rotation\n    key_rotate(pBone)\n\n    # Iterate through each axis and set the keyframes for the bone\n    for axis in ['X', 'Y', 'Z']:\n        rotations = get_rotations(axis)\n        for rotation in rotations:\n            cmds.currentTime(cmds.currentTime(query=True) + 1)\n            cmds.rotate(rotation[0], rotation[1], rotation[2], pBone, relative=True, componentSpace=True)\n            key_rotate(pBone)\n\n    # Recursively process all child bones\n    children = cmds.listRelatives(pBone, children=True, fullPath=True) or []\n    for child in children:\n        process_all_bones(child)\n\n\n# Call the process_all_bones function for each root joint in the scene\nroot_joints = cmds.ls(sl=1, type=\"joint\", l=True)\nif len(root_joints) > 2:\n    cmds.error(\"Maybe you have selected more than a root, please proceed one root at time to avoid long calculation\", n=True)\nelif not root_joints:\n    cmds.error(\"Please select a joint of your skeleton.\", n=True)\nelse:\n    cmds.currentUnit(time=\"6fps\")\n    cmds.refresh(suspend=True)\n    for joint in root_joints:\n        process_all_bones(joint)\n    current_frame = cmds.currentTime(query=True)\n    cmds.playbackOptions(maxTime=current_frame, animationEndTime=current_frame)\n    cmds.currentUnit(time=\"30fps\")\n    cmds.refresh(suspend=False)\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1

@@ -1,3 +1,10 @@
+"""
+This script allows user to create a range of motion on a selected joint and its hierarchy.
+Usage:
+    Select one joint and run the script.
+"""
+__author__ = "Remi CUXAC"
+
 import maya.cmds as cmds
 
 

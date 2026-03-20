@@ -1,0 +1,8 @@
+{
+    "scripts/AnimROM.py":
+        {
+            "label": "Range of Motion",
+            "imageOverlayLabel": "",
+            "annotation": "Create a Range of Motion on selected joint and his hierarchy"
+        }
+}

@@ -4,7 +4,7 @@ from maya import cmds
 def merge_curves(pObjList: list):
     group = cmds.group(n="mygroup1", empty=True)
 
-    ## To set the pivot to the fisrt selected object, uncomment the following line:
+    ## To set the pivot to the first selected object, uncomment the following line:
     # cmds.matchTransform(group, pObjList[0], pivots=True)
 
     for obj in pObjList:

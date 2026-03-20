@@ -26,4 +26,5 @@ def color_obj(pObjList: list, pColor: Color):
                 cmds.setAttr(shape + ".overrideColor", pColor[1])
 
 sel = cmds.ls(sl=True)
-color_obj(sel, Color.red) if sel else cmds.error("Please select a nurbsCurve or a joint.", n=True)
+color_choice = Color.red
+color_obj(sel, color_choice) if sel else cmds.error("Please select a nurbsCurve or a joint.", n=True)
