@@ -7,7 +7,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -77,7 +77,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -125,7 +125,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -159,7 +159,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -193,7 +193,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -228,7 +228,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -263,7 +263,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -298,7 +298,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -333,7 +333,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -381,7 +381,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -415,7 +415,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -449,7 +449,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -496,7 +496,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -531,7 +531,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -636,7 +636,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -671,7 +671,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -718,7 +718,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -753,7 +753,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -815,7 +815,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "from maya import cmds\n\ndef reset_skin_pose():\n    skinList = []\n    for obj in sel:\n        history = cmds.listHistory(obj, future=True) if cmds.objectType(obj, isType=\"joint\") else cmds.listHistory(obj)\n        skinList = cmds.ls(history, type=\"skinCluster\")\n        for skin in skinList:\n            nbInfl = len(cmds.listConnections(skin + '.matrix', destination=False))\n            offset = 0\n            for i in range(nbInfl):\n                while not cmds.getAttr(f\"{skin}.matrix[{i+offset}]\"):\n                    offset+=1\n                    if offset > 1000:\n                        raise Exception(\"Infinite loop detected, please warn the author of this script\")\n                i += offset\n                bindedJoint = cmds.listConnections(skin + '.matrix[' + str(i) + ']', destination=False)[0]\n                wInvMtx = cmds.getAttr(bindedJoint + '.worldInverseMatrix')\n                cmds.setAttr(skin + '.bindPreMatrix[' + str(i) + ']', wInvMtx, type='matrix')\n    if skinList:\n        cmds.inViewMessage( amg='<hl>Done !</hl>.', pos='botCenter', fade=True)\n\ndef reset_bind_pose():\n    dagPoses = cmds.ls(type=\"dagPose\")\n    cmds.delete(dagPoses)\n    cmds.dagPose(cmds.ls(type=\"joint\"), s=True, bp=True)\n\nsel = cmds.ls(sl=True, type=\"transform\")\nif sel:\n    reset_skin_pose()\n    reset_bind_pose()\nelse:\n    cmds.error(\"Please selet at least one skinned object.\", n=True)\n" 
+        -command "from maya import cmds\n\ndef reset_skin_pose():\n    skinList = []\n    for obj in sel:\n        history = cmds.listHistory(obj, future=True) if cmds.objectType(obj, isType=\"joint\") else cmds.listHistory(obj)\n        skinList = cmds.ls(history, type=\"skinCluster\")\n        for skin in skinList:\n            plugs = cmds.listAttr(f\"{skin}.matrix\", multi=True) or []\n            indices = [int(p.split('[')[-1][:-1]) for p in plugs]\n            for i in indices:\n                bindedJoint = cmds.listConnections(skin + '.matrix[' + str(i) + ']', destination=False)[0]\n                wInvMtx = cmds.getAttr(bindedJoint + '.worldInverseMatrix')\n                cmds.setAttr(skin + '.bindPreMatrix[' + str(i) + ']', wInvMtx, type='matrix')\n    if skinList:\n        cmds.inViewMessage( amg='<hl>Done !</hl>.', pos='botCenter', fade=True)\n\ndef reset_bind_pose():\n    dagPoses = cmds.ls(type=\"dagPose\")\n    cmds.delete(dagPoses)\n    cmds.dagPose(cmds.ls(type=\"joint\"), s=True, bp=True)\n\nsel = cmds.ls(sl=True, type=\"transform\")\nif sel:\n    reset_skin_pose()\n    reset_bind_pose()\nelse:\n    cmds.error(\"Please selet at least one skinned object.\", n=True)" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -823,7 +823,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -857,7 +857,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -904,7 +904,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -939,7 +939,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -974,7 +974,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1008,7 +1008,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1042,7 +1042,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1081,7 +1081,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1168,7 +1168,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1202,7 +1202,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1237,7 +1237,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1320,7 +1320,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1355,7 +1355,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1390,7 +1390,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1425,7 +1425,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1460,7 +1460,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1495,7 +1495,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1530,7 +1530,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1565,7 +1565,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
