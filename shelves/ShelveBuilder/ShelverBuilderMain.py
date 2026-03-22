@@ -1,7 +1,8 @@
 from pathlib import Path
 from modules import python_utils as utils
 
-
+# TODO : set tooltip from header of python ?
+# TODO : manage sub menus in maya
 shelf_path = Path(__file__).parent.parent / "shelf_Rigging_Custom.mel"
 script_data_path = Path(__file__).parent / "script_data.json"
 

@@ -7,7 +7,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 1
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 34
         -height 34
@@ -35,41 +35,6 @@ global proc shelf_Rigging_Custom () {
         -marginWidth 0
         -marginHeight 1
         -command "NodeEditorWindow" 
-        -sourceType "mel" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 32
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Show Component Editor" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Show Component Editor" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "Components" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "defaultFourStackedLayout.png" 
-        -image1 "defaultFourStackedLayout.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "ComponentEditor" 
         -sourceType "mel" 
         -commandRepeatable 1
         -flat 1
@@ -111,7 +76,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 34
+        -width 16
         -height 35
         -manage 1
         -visible 1
@@ -166,12 +131,12 @@ global proc shelf_Rigging_Custom () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "Center Pivot" 
+        -annotation "Freeze Transformations" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
         -align "center" 
-        -label "Center Pivot" 
+        -label "Freeze Transform" 
         -labelOffset 0
         -rotation 0
         -flipX 0
@@ -179,14 +144,85 @@ global proc shelf_Rigging_Custom () {
         -useAlpha 1
         -font "plainLabelFont" 
         -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0 0 0 0.5 
-        -image "CenterPivot.png" 
-        -image1 "CenterPivot.png" 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "FreezeTransform.png" 
+        -image1 "FreezeTransform.png" 
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "if(!size(`ls -sl`)) error -n \"Please select an object\";\nelse CenterPivot;" 
-        -sourceType "mel" 
+        -command "import maya.api.OpenMaya as om\nfrom maya import cmds\n\n\ndef freeze_transform(pObjList: list):\n    for obj in pObjList:\n        if cmds.objectType(obj) == \"joint\":\n            # rotation\n            mat = cmds.xform(obj, q=True, m=True)\n            m = om.MMatrix(mat)\n            mt = om.MTransformationMatrix(m)\n            rot = mt.rotation()\n            rotRad = (rot.x, rot.y, rot.z)\n            rotDeg = [om.MAngle(angle).asDegrees() for angle in rotRad]\n            cmds.setAttr(f\"{obj}.rotate\", 0, 0, 0)\n            cmds.setAttr(f\"{obj}.jointOrient\", *rotDeg)\n            \n            # scale\n            skin = list(set(cmds.listConnections(obj, d=True, s=False, type=\"skinCluster\")))\n            if skin and cmds.getAttr(f\"{obj}.scale\")!=[(1.0, 1.0, 1.0)]:\n                cmds.warning(f\"Bind Pose has been modified since the scale of {obj} has changed. Please reset skin Bind Pose\")\n            listChildren = {}\n            for child in cmds.listRelatives(obj, fullPath=True, children=True) or []:\n                mat = cmds.xform(child, q=True, m=True, ws=True)\n                listChildren[child] = mat\n            cmds.setAttr(f\"{obj}.scale\", 1,1,1)\n            for child in listChildren:\n                cmds.xform(child, m=listChildren[child], ws=True)            \n        else:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True, n=False, pn=True)\n\n\nsel = cmds.ls(sl=1)\nfreeze_transform(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -sourceType "python" 
+        -doubleClickCommand "FreezeTransformationsOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 1
+        -flexibleWidthValue 64
+        -enable 1
+        -width 34
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Transfer transforms to OffsetParentMatrix attribute.\nThis will set transforms to 0 and helps to be free from parent groups." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Transfer Trs to OPM" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Offset Parent Matrix" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "decomposeMatrix.svg" 
+        -image1 "decomposeMatrix.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "import maya.api.OpenMaya as om\nimport maya.cmds as cmds\n\nTRANSFORM_NODETYPES = [\"transform\", \"joint\"]\n\n\ndef has_non_default_locked_attributes(pNode:str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        default_value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                current_value = cmds.getAttr(attribute_name)\n                if cmds.getAttr(attribute_name, lock=True) and current_value != default_value:\n                    return True\n\n\ndef reset_transforms(pNode:str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                if not cmds.getAttr(attribute_name, lock=True):\n                    cmds.setAttr(attribute_name, value)\n\n\ndef bake_transform_to_offset_parent_matrix(pObjList: list):\n    for node in pObjList:\n        if cmds.nodeType(node) not in TRANSFORM_NODETYPES:\n            raise ValueError(\"Node {} is not a transform node\".format(node))\n\n        if has_non_default_locked_attributes(node):\n            raise RuntimeError(\"Node {} has at least one non default locked attribute(s)\".format(node))\n\n        local_matrix = om.MMatrix(cmds.xform(node, q=True, m=True, ws=False))\n        offset_parent_matrix = om.MMatrix(cmds.getAttr(node + \".offsetParentMatrix\"))\n        baked_matrix = local_matrix * offset_parent_matrix\n        cmds.setAttr(node + \".offsetParentMatrix\", baked_matrix, type=\"matrix\")\n    \n        reset_transforms(node)\n\n\nsel = cmds.ls(sl=True)\nbake_transform_to_offset_parent_matrix(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 1
+        -flexibleWidthValue 64
+        -enable 1
+        -width 34
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Create a correctly aligned group for each item in the selection" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Group Align" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Group" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
+        -image "group.png" 
+        -image1 "group.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\n\ndef group(pObjList: list):\n    if not pObjList:\n        cmds.group(n = \"grp_01\", empty=True)\n        return\n    for obj in pObjList:\n        objName = obj.split(\"|\")[-1]\n        parent = cmds.listRelatives(obj, parent=True, fullPath=True)\n        group = cmds.group(empty=True)\n        cmds.matchTransform(group, obj)\n        cmds.parent(obj, group)\n        if parent:\n            cmds.parent(group, parent)\n        cmds.rename(group, f\"grp_{objName}\")\n\n\nsel = cmds.ls(sl=1, long=True)\nsel.sort(key=lambda x:x.count(\"|\"), reverse=True)\ngroup(sel)\n\n" 
+        -sourceType "python" 
         -commandRepeatable 1
         -flat 1
     ;
@@ -225,149 +261,9 @@ global proc shelf_Rigging_Custom () {
         -commandRepeatable 1
         -flat 1
     ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Create a correctly positioned group for each item in the selection" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Group Align" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "Group" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "group.png" 
-        -image1 "group.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "from maya import cmds\n\n\ndef group(pObjList: list):\n    if not pObjList:\n        cmds.group(n = \"grp_01\", empty=True)\n        return\n    for obj in pObjList:\n        objName = obj.split(\"|\")[-1]\n        parent = cmds.listRelatives(obj, parent=True, fullPath=True)\n        group = cmds.group(empty=True)\n        cmds.matchTransform(group, obj)\n        cmds.parent(obj, group)\n        if parent:\n            cmds.parent(group, parent)\n        cmds.rename(group, f\"grp_{objName}\")\n\n\nsel = cmds.ls(sl=1, long=True)\nsel.sort(key=lambda x:x.count(\"|\"), reverse=True)\ngroup(sel)\n\n" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Transfer transforms of current selection to his parent transform, then reset transforms of selection." 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Transfer Trs to Parent" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "Parent" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "decomposeMatrix.svg" 
-        -image1 "decomposeMatrix.svg" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "from maya import cmds\n\n\ndef transfer_transforms_to_parent(pObjList: list):\n    for obj in pObjList:\n        parent = cmds.listRelatives(obj, parent=True)\n        if parent:\n            if cmds.objectType(parent) == \"transform\" and len(cmds.listRelatives(parent, shapes=True) or []) == 0:\n                cmds.matchTransform(parent, obj)\n                cmds.matchTransform(obj, parent)\n            \nsel = cmds.ls(sl=True, long=True, type=\"transform\")\ntransfer_transforms_to_parent(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Transfer transforms to OffsetParentMatrix attribute.\nThis will set transforms to 0 and helps to be free from group parents." 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Transfer Trs to OPM" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "Offset Parent Matrix" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "decomposeMatrix.svg" 
-        -image1 "decomposeMatrix.svg" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "import maya.api.OpenMaya as om\nimport maya.cmds as cmds\n\nTRANSFORM_NODETYPES = [\"transform\", \"joint\"]\n\n\ndef has_non_default_locked_attributes(pNode:str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        default_value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                current_value = cmds.getAttr(attribute_name)\n                if cmds.getAttr(attribute_name, lock=True) and current_value != default_value:\n                    return True\n\n\ndef reset_transforms(pNode:str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                if not cmds.getAttr(attribute_name, lock=True):\n                    cmds.setAttr(attribute_name, value)\n\n\ndef bake_transform_to_offset_parent_matrix(pObjList: list):\n    for node in pObjList:\n        if cmds.nodeType(node) not in TRANSFORM_NODETYPES:\n            raise ValueError(\"Node {} is not a transform node\".format(node))\n\n        if has_non_default_locked_attributes(node):\n            raise RuntimeError(\"Node {} has at least one non default locked attribute(s)\".format(node))\n\n        local_matrix = om.MMatrix(cmds.xform(node, q=True, m=True, ws=False))\n        offset_parent_matrix = om.MMatrix(cmds.getAttr(node + \".offsetParentMatrix\"))\n        baked_matrix = local_matrix * offset_parent_matrix\n        cmds.setAttr(node + \".offsetParentMatrix\", baked_matrix, type=\"matrix\")\n    \n        reset_transforms(node)\n\n\nsel = cmds.ls(sl=True)\nbake_transform_to_offset_parent_matrix(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Freeze Transformations" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Freeze Transform" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "FreezeTransform.png" 
-        -image1 "FreezeTransform.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "import maya.api.OpenMaya as om\nfrom maya import cmds\n\n\ndef freeze_transform(pObjList: list):\n    for obj in pObjList:\n        if cmds.objectType(obj) == \"joint\":\n            # rotation\n            mat = cmds.xform(obj, q=True, m=True)\n            m = om.MMatrix(mat)\n            mt = om.MTransformationMatrix(m)\n            rot = mt.rotation()\n            rotRad = (rot.x, rot.y, rot.z)\n            rotDeg = [om.MAngle(angle).asDegrees() for angle in rotRad]\n            cmds.setAttr(f\"{obj}.rotate\", 0, 0, 0)\n            cmds.setAttr(f\"{obj}.jointOrient\", *rotDeg)\n            \n            # scale\n            skin = list(set(cmds.listConnections(obj, d=True, s=False, type=\"skinCluster\")))\n            if skin and cmds.getAttr(f\"{obj}.scale\")!=[(1.0, 1.0, 1.0)]:\n                cmds.warning(f\"Bind Pose has been modified since the scale of {obj} has changed. Please reset skin Bind Pose\")\n            listChildren = {}\n            for child in cmds.listRelatives(obj, fullPath=True, children=True) or []:\n                mat = cmds.xform(child, q=True, m=True, ws=True)\n                listChildren[child] = mat\n            cmds.setAttr(f\"{obj}.scale\", 1,1,1)\n            for child in listChildren:\n                cmds.xform(child, m=listChildren[child], ws=True)            \n        else:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True, n=False, pn=True)\n\n\nsel = cmds.ls(sl=1)\nfreeze_transform(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
-        -sourceType "python" 
-        -doubleClickCommand "FreezeTransformationsOptions" 
-        -commandRepeatable 1
-        -flat 1
-    ;
     separator
         -enable 1
-        -width 34
+        -width 16
         -height 35
         -manage 1
         -visible 1
@@ -377,40 +273,6 @@ global proc shelf_Rigging_Custom () {
         -highlightColor 0 0 0 
         -style "shelf" 
         -horizontal 0
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Select hierarchy" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Select Hierarchy" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "pickHierarchy.png" 
-        -image1 "pickHierarchy.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "if(!size(`ls -sl`)) error -n \"Please select an object\";\nelse SelectHierarchy;" 
-        -sourceType "mel" 
-        -commandRepeatable 1
-        -flat 1
     ;
     shelfButton
         -enableCommandRepeat 1
@@ -482,7 +344,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 34
+        -width 16
         -height 35
         -manage 1
         -visible 1
@@ -492,41 +354,6 @@ global proc shelf_Rigging_Custom () {
         -highlightColor 0 0 0 
         -style "shelf" 
         -horizontal 0
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Create locator from gizmo" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Create locator from gizmo" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "Loc" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "locator.svg" 
-        -image1 "locator.svg" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "from maya import cmds\n\n\ndef create_loc_from_gizmo(pObjList: list):\n    prevObjName = \"\"\n    if not pObjList:\n        obj = cmds.spaceLocator(name = \"locator_01\")\n        return\n    for obj in pObjList:\n        objName = obj.split('|')[-1].split('.')[0]\n        mat = cmds.xform(obj, q=True, ws=True, m=True)\n        pos = cmds.manipMoveContext(\"Move\", q=True, p=True)\n        if objName == prevObjName:\n            continue\n        prevObjName = objName\n        obj = cmds.spaceLocator(name=f\"locator_{objName}\")\n        cmds.setToolTo(\"moveSuperContext\")\n        cmds.xform(obj, ws=True, m=mat)\n        cmds.xform(obj, ws=True, translation=pos)\n\n\nsel = cmds.ls(sl=1)\ncreate_loc_from_gizmo(sel)\n" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
     ;
     shelfButton
         -enableCommandRepeat 1
@@ -663,7 +490,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script allows user to create a range of motion on a selected joint and its hierarchy.\nUsage:\n    Select one joint and run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef key_rotate(pBone: str):\n    cmds.setKeyframe(pBone, attribute='rotateX', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateY', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(pBone, attribute='rotateZ', t=cmds.currentTime(query=True))\n\n\ndef get_rotations(axis):\n    lRotationX = [(90, 0, 0), (-180, 0, 0), (90, 0, 0)]\n    lRotationY = [(0, 90, 0), (0, -180, 0), (0, 90, 0)]\n    lRotationZ = [(0, 0, 90), (0, 0, -180), (0, 0, 90)]\n\n    if axis == \"X\":\n        return lRotationX\n    elif axis == \"Y\":\n        return lRotationY\n    elif axis == \"Z\":\n        return lRotationZ\n    return None\n\n\ndef process_all_bones(pBone: str):\n    # Apply the keyframe and store the current rotation\n    key_rotate(pBone)\n\n    # Iterate through each axis and set the keyframes for the bone\n    for axis in ['X', 'Y', 'Z']:\n        rotations = get_rotations(axis)\n        for rotation in rotations:\n            cmds.currentTime(cmds.currentTime(query=True) + 1)\n            cmds.rotate(rotation[0], rotation[1], rotation[2], pBone, relative=True, componentSpace=True)\n            key_rotate(pBone)\n\n    # Recursively process all child bones\n    children = cmds.listRelatives(pBone, children=True, fullPath=True) or []\n    for child in children:\n        process_all_bones(child)\n\n\n# Call the process_all_bones function for each root joint in the scene\nroot_joints = cmds.ls(sl=1, type=\"joint\", l=True)\nif len(root_joints) > 2:\n    cmds.error(\"Maybe you have selected more than a root, please proceed one root at time to avoid long calculation\", n=True)\nelif not root_joints:\n    cmds.error(\"Please select a joint of your skeleton.\", n=True)\nelse:\n    cmds.currentUnit(time=\"6fps\")\n    cmds.refresh(suspend=True)\n    for joint in root_joints:\n        process_all_bones(joint)\n    current_frame = cmds.currentTime(query=True)\n    cmds.playbackOptions(maxTime=current_frame, animationEndTime=current_frame)\n    cmds.currentUnit(time=\"30fps\")\n    cmds.refresh(suspend=False)\n" 
+        -command "\"\"\"\nThis script allows user to create a range of motion on a selected joint and its hierarchy.\nUsage:\n    Select one joint and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef key_rotate(obj: str):\n    cmds.setKeyframe(obj, attribute='rotateX', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(obj, attribute='rotateY', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(obj, attribute='rotateZ', t=cmds.currentTime(query=True))\n\n\ndef get_rotations(axis):\n    rot_x = [(90, 0, 0), (-180, 0, 0), (90, 0, 0)]\n    rot_y = [(0, 90, 0), (0, -180, 0), (0, 90, 0)]\n    rot_z = [(0, 0, 90), (0, 0, -180), (0, 0, 90)]\n\n    if axis == \"X\":\n        return rot_x\n    elif axis == \"Y\":\n        return rot_y\n    elif axis == \"Z\":\n        return rot_z\n    return None\n\n\ndef create_range_of_motion(joint_list: list):\n    # Call the process_all_joints function for each root joint in the scene\n    cmds.currentUnit(time=\"6fps\")\n    cmds.refresh(suspend=True)\n    for joint in joint_list:\n        # Apply the keyframe and store the current rotation\n        key_rotate(joint)\n        # Iterate through each axis and set the keyframes for the bone\n        for axis in ['X', 'Y', 'Z']:\n            rotations = get_rotations(axis)\n            for rotation in rotations:\n                cmds.currentTime(cmds.currentTime(query=True) + 1)\n                cmds.rotate(rotation[0], rotation[1], rotation[2], joint, relative=True, componentSpace=True)\n                key_rotate(joint)\n    current_frame = cmds.currentTime(query=True)\n    cmds.playbackOptions(maxTime=current_frame, animationEndTime=current_frame)\n    cmds.currentUnit(time=\"30fps\")\n    cmds.refresh(suspend=False)\n\n\nsel = cmds.ls(sl=1, type=\"joint\", l=True)\ncreate_range_of_motion(sel) if sel else cmds.warning(\"Please select a joint of your skeleton.\")\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -702,19 +529,6 @@ global proc shelf_Rigging_Custom () {
         -commandRepeatable 1
         -flat 1
     ;
-    separator
-        -enable 1
-        -width 34
-        -height 35
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0 0 0 
-        -style "shelf" 
-        -horizontal 0
-    ;
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 1
@@ -725,30 +539,43 @@ global proc shelf_Rigging_Custom () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "Assigns selected vertices with the same weight values as their neighboring vertices" 
+        -annotation "Create locator from gizmo" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
         -align "center" 
-        -label "Hammer Skin Weights" 
+        -label "Create locator from gizmo" 
         -labelOffset 0
         -rotation 0
         -flipX 0
         -flipY 0
         -useAlpha 1
         -font "plainLabelFont" 
-        -imageOverlayLabel "Hammer" 
+        -imageOverlayLabel "Loc" 
         -overlayLabelColor 0.8 0.8 0.8 
         -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "smoothSkinWeights.png" 
-        -image1 "smoothSkinWeights.png" 
+        -image "locator.svg" 
+        -image1 "locator.svg" 
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "WeightHammer" 
-        -sourceType "mel" 
+        -command "from maya import cmds\n\n\ndef create_loc_from_gizmo(pObjList: list):\n    prevObjName = \"\"\n    if not pObjList:\n        obj = cmds.spaceLocator(name = \"locator_01\")\n        return\n    for obj in pObjList:\n        objName = obj.split('|')[-1].split('.')[0]\n        mat = cmds.xform(obj, q=True, ws=True, m=True)\n        pos = cmds.manipMoveContext(\"Move\", q=True, p=True)\n        if objName == prevObjName:\n            continue\n        prevObjName = objName\n        obj = cmds.spaceLocator(name=f\"locator_{objName}\")\n        cmds.setToolTo(\"moveSuperContext\")\n        cmds.xform(obj, ws=True, m=mat)\n        cmds.xform(obj, ws=True, translation=pos)\n\n\nsel = cmds.ls(sl=1)\ncreate_loc_from_gizmo(sel)\n" 
+        -sourceType "python" 
         -commandRepeatable 1
         -flat 1
+    ;
+    separator
+        -enable 1
+        -width 16
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0 0 0 
+        -style "shelf" 
+        -horizontal 0
     ;
     shelfButton
         -enableCommandRepeat 1
@@ -890,7 +717,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 34
+        -width 16
         -height 35
         -manage 1
         -visible 1
@@ -1034,10 +861,12 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "from maya import cmds\n\n\ndef increase_line_width(pObjList: list):\n    for obj in pObjList:\n        shapeList = cmds.listRelatives(obj, shapes=True, fullPath=True)\n        for shape in shapeList:\n            if cmds.objectType(shape, isType=\"nurbsCurve\"):\n                width = cmds.getAttr(f\"{shape}.lineWidth\") + 1 or 2\n                cmds.setAttr(f\"{shape}.lineWidth\", width)\n\n\nsel = cmds.ls(sl=True, type=\"transform\", long=True)\nincrease_line_width(sel) if sel else cmds.error(\"Please select at least one curve\", n=True)\n" 
+        -command "\"\"\"\nThis script increases the thickness of a curve.\nUsage:\n    select one or more curves and execute the script.\n\"\"\"\nfrom maya import cmds\n\n\ndef change_curve_thickness(curve_list: list, increase: bool = True):\n    for crv in curve_list:\n        shapeList = cmds.listRelatives(crv, shapes=True, fullPath=True)\n        for shape in shapeList:\n            if cmds.objectType(shape, isType=\"nurbsCurve\"):\n                width = cmds.getAttr(f\"{shape}.lineWidth\")\n                if increase:\n                    width += 3 if width < 1 else 1\n                else:\n                    width -= 1\n                cmds.setAttr(f\"{shape}.lineWidth\", width)\n\n\nsel = cmds.ls(sl=True, type=\"transform\", long=True)\nchange_curve_thickness(sel, True) if sel else cmds.error(\"Please select at least one curve\", n=True)\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
+        -mi "Decrease curve thickness" ( "\"\"\"\nThis script increases the thickness of a curve.\nUsage:\n    select one or more curves and execute the script.\n\"\"\"\nfrom maya import cmds\n\n\ndef change_curve_thickness(curve_list: list, increase: bool = True):\n    for crv in curve_list:\n        shapeList = cmds.listRelatives(crv, shapes=True, fullPath=True)\n        for shape in shapeList:\n            if cmds.objectType(shape, isType=\"nurbsCurve\"):\n                width = cmds.getAttr(f\"{shape}.lineWidth\")\n                if increase:\n                    width += 3 if width < 1 else 1\n                else:\n                    width -= 1\n                cmds.setAttr(f\"{shape}.lineWidth\", width)\n\n\nsel = cmds.ls(sl=True, type=\"transform\", long=True)\nchange_curve_thickness(sel, False) if sel else cmds.error(\"Please select at least one curve\", n=True)\n" )
+        -mip 0
     ;
     shelfButton
         -enableCommandRepeat 1
@@ -1149,12 +978,10 @@ global proc shelf_Rigging_Custom () {
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
-        -mi "Switch Weight Value" ( "from maya import cmds\nsel = cmds.ls(sl=1)\n\ndef update_offset_constraint(sel):\n    if not sel:cmds.warning(\"Please select an constrained object or the constraint you want to update.\");return\n    constraint = list(set(cmds.ls(cmds.listConnections(sel, destination=False), type=\"constraint\")))\n    if not constraint:cmds.warning(\"No constraint applied to the object. Please select a another constrained objet or constraint.\");return\n    for const in constraint:\n        constType = cmds.nodeType(const)\n        function = getattr(cmds, constType)\n        driverList= function(const, q=True, targetList=True)\n        if not driverList:cmds.warning(\"The constraint is driven by nothing.\");return\n        weight = function(driverList, sel, q=True, w=True)\n        function(driverList, sel, e=True, w=1-weight)\n\nupdate_offset_constraint(sel)" )
-        -mip 0
     ;
     separator
         -enable 1
-        -width 34
+        -width 16
         -height 35
         -manage 1
         -visible 1
@@ -1168,14 +995,14 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 34
         -height 34
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "Create a plane helper for joint from selection" 
+        -annotation "Create a plane helper for selected joints" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
@@ -1269,44 +1096,9 @@ global proc shelf_Rigging_Custom () {
         -commandRepeatable 1
         -flat 1
     ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 32
-        -enable 1
-        -width 34
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Setup pickwalking for all controllers (nurbsCurve) of the scene." 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Setup Pickwalk" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "PW" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "menuIconSelectFilter.png" 
-        -image1 "menuIconSelectFilter.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "import maya.cmds as cmds\n\ndef tag_hierarchy_controllers():\n    shapes = cmds.ls(type='nurbsCurve', long=True) or []\n    nurbs_transforms = list(set(cmds.listRelatives(shapes, parent=True, fullPath=True) or []))\n\n    if not nurbs_transforms:\n        cmds.error(\"No nurbsCurve controllers found.\", n=True)\n        return\n\n    for node in nurbs_transforms:\n        # Tag the transform as a controller\n        # Creating it if it doesn't exist\n        cmds.controller(node)\n        \n        # 2. Find the nearest ancestor that is also a controller\n        # We climb the hierarchy to skip over groups like 'grp_body'\n        curr_parent = cmds.listRelatives(node, parent=True, fullPath=True)\n        \n        while curr_parent:\n            parent_node = curr_parent[0]\n            \n            if parent_node in nurbs_transforms:\n                # Found a controller parent. Link it and stop climbing.\n                cmds.controller(node, parent_node, p=True)\n                print(f\"Linked Controller: {node.split('|')[-1]} -> Parent: {parent_node.split('|')[-1]}\")\n                break\n            \n            # If current parent isn't a controller, keep going up\n            curr_parent = cmds.listRelatives(parent_node, parent=True, fullPath=True)\n\ntag_hierarchy_controllers()" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
-    ;
     separator
         -enable 1
-        -width 34
+        -width 16
         -height 35
         -manage 1
         -visible 1
@@ -1565,7 +1357,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 1
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 34
         -height 34

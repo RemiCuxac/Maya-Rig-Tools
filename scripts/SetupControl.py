@@ -13,8 +13,8 @@ def create_control(pObjList: list):
 
         # Create constraint
         cmds.parentConstraint(newCtrl, bone, maintainOffset=True)
-        if parent:
-            cmds.parentConstraint(parent, newGrp, maintainOffset=True)
+        # if parent:
+        #     cmds.parentConstraint(parent, newGrp, maintainOffset=True)
     cmds.inViewMessage(amg="<hl>Don't forget to parent newly created groups</hl>.", pos='midCenter', fade=True)
 
 

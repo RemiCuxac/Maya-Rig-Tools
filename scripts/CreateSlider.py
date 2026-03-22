@@ -1,3 +1,10 @@
+"""
+This script create a slider that will be useful for face rigging.
+Usage:
+    run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 from enum import Enum, auto
 
 from maya import cmds
@@ -9,10 +16,8 @@ class SliderType(Enum):
     rectanglePositiveNegative = auto()
 
 
-d = 1 / 3
-
-
 def create_slider(slider_type: SliderType):
+    d = 1 / 3
     ctrl = cmds.circle(nr=(0, 1, 0), r=0.2, constructionHistory=False)[0]
     if slider_type == slider_type.rectanglePositive:
         ui = cmds.curve(d=True, point=[(-d, 0, -d),
@@ -41,7 +46,7 @@ def create_slider(slider_type: SliderType):
                         k=[1, 2, 3, 4, 5])
         cmds.transformLimits(ctrl, tx=(-1, 1), etx=(1, 1))
         cmds.setAttr(f"{ctrl}.tz", lock=True, keyable=False, channelBox=False)
-    
+
     else:
         # Default fallback or error handling if needed, though with Enum typing it's safer.
         return
@@ -60,5 +65,4 @@ def create_slider(slider_type: SliderType):
     cmds.rename(ui, "interface_ui_to_rename")
 
 
-if __name__ == "__main__":
-    create_slider(SliderType.rectanglePositive)
+create_slider(SliderType.rectanglePositive)

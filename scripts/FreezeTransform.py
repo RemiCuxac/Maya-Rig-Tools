@@ -1,3 +1,10 @@
+"""
+This script performs a Freeze Transform on any object even on a joint that is attached to a skin.
+Usage:
+    select an object / joint and run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 import maya.api.OpenMaya as om
 from maya import cmds
 
