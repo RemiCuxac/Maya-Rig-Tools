@@ -1,3 +1,9 @@
+"""
+This script updates any constraint after moving the constrained object.
+Usage:
+    move any constrained object, then run the script.
+"""
+__author__ = "Rémi CUXAC"
 from maya import cmds
 
 def update_offset_constraint(obj_list):

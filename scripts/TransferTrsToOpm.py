@@ -1,3 +1,8 @@
+"""
+This script bakes all the transformation to the offsetParentMatrix attribute, so it will by animatable without any parent group.
+"""
+__author__ = "Rémi CUXAC"
+
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 

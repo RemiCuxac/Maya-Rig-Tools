@@ -1,7 +1,5 @@
 """
 This script creates a helper object that looks like Local Rotation Axis.
-Usage:
-    run the script.
 """
 __author__ = "Rémi CUXAC"
 

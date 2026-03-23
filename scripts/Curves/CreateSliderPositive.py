@@ -1,7 +1,5 @@
 """
 This script create a slider that will be useful for face rigging.
-Usage:
-    run the script.
 """
 __author__ = "Rémi CUXAC"
 

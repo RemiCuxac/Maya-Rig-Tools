@@ -1,5 +1,7 @@
 """
 This script converts any kind of selection to a curve. It works on full mesh, nurbsSurface and even on edge selection.
+Usage:
+    select any edge(s), or objects and run the script. It will create a new curve named "curve_obj1".
 """
 __author__ = "Rémi CUXAC"
 

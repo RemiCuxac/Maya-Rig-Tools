@@ -1,3 +1,10 @@
+"""
+This script applies a color to the selected joint or curve.
+Usage:
+    select the joint or curve transform and run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 from enum import Enum
 
 from maya import cmds

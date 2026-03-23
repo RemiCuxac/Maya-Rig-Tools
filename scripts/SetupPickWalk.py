@@ -1,3 +1,8 @@
+"""
+This script setup pick-walking on all nurbsCurve in the scene, depending on the hierarchy level.
+"""
+__author__ = "Rémi CUXAC"
+
 import maya.cmds as cmds
 
 

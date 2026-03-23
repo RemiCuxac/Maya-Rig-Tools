@@ -1,6 +1,7 @@
 """
-This script is used to replace shapes. The first curve selected will replace the second one.
-This script isn't compatible for constraints and other connections. It just parents things and rename.
+This script helps to replace any curve by another one, without breaking connections on the source.
+Usage:
+    select the curve you want to be replaced, then the curve you want to replace from, and run the script.
 """
 __author__ = "Rémi CUXAC"
 
@@ -10,11 +11,11 @@ alert = lambda: cmds.confirmDialog(title='Error:', message="Please select two cu
 
 
 def replace_curves(curve_list: list):
-    if len(sel) != 2:
+    if len(curve_list) != 2:
         alert()
         return
-    source = sel[0]
-    target = sel[1]
+    source = curve_list[0]
+    target = curve_list[1]
     if any(cmds.listRelatives(obj, shapes=True) is None for obj in [source, target]):
         alert()
         return

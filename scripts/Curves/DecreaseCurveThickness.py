@@ -1,6 +1,10 @@
 """
 This script decrease the thickness of a selected curve.
+Usage:
+    Select the curve transform and run the script.
 """
+__author__ = "Rémi CUXAC"
+
 from maya import cmds
 
 

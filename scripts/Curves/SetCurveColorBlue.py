@@ -1,3 +1,10 @@
+"""
+This script applies a color to the selected joint or curve.
+Usage:
+    select the joint or curve transform and run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 from enum import Enum
 
 from maya import cmds
@@ -7,9 +14,9 @@ class Color(tuple, Enum):
     RED = (True, 13)
     WHITE = (True, 16)
     YELLOW = (True, 17)
-    BLUE = (True, 18)
     PINK = (True, 20)
     GREEN = (True, 27)
+    BLUE = (True, 29)
     DEFAULT = (False, 0)
 
 

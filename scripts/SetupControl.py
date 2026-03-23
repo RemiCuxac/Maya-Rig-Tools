@@ -1,3 +1,10 @@
+"""
+This script creates a controller, his parent group and the constraint to the selected joint.
+Usage:
+    Select the joint you want to constrain and setup, then run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 import maya.cmds as cmds
 
 

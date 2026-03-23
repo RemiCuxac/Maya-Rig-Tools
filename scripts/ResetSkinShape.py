@@ -1,4 +1,11 @@
+"""
+This script reset the shape to his initial pos, even if a skin modifier has moved some vertices.
+The skin will be updated.
+"""
+__author__ = "Rémi CUXAC"
+
 from maya import cmds
+
 
 def reset_skin_pose():
     skinList = []
@@ -13,12 +20,14 @@ def reset_skin_pose():
                 wInvMtx = cmds.getAttr(bindedJoint + '.worldInverseMatrix')
                 cmds.setAttr(skin + '.bindPreMatrix[' + str(i) + ']', wInvMtx, type='matrix')
     if skinList:
-        cmds.inViewMessage( amg='<hl>Done !</hl>.', pos='botCenter', fade=True)
+        cmds.inViewMessage(amg='<hl>Done !</hl>.', pos='botCenter', fade=True)
+
 
 def reset_bind_pose():
     dagPoses = cmds.ls(type="dagPose")
     cmds.delete(dagPoses)
     cmds.dagPose(cmds.ls(type="joint"), s=True, bp=True)
+
 
 sel = cmds.ls(sl=True, type="transform")
 if sel:

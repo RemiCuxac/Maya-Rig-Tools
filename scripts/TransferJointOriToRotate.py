@@ -1,3 +1,11 @@
+"""
+This script bakes any joint orient information to the rotation of the joint.
+Useful to send an animation to a game engine that deosn't supports joint orients.
+Usage:
+    select the joint then run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 import maya.api.OpenMaya as om
 from maya import cmds
 

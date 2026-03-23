@@ -1,8 +1,8 @@
 """
-This script performs a go to bind pose from any kind of object.
+This script performs a "go to bind pose" from any kind of object.
 So you can select a controller, a joint, a geo, and it will apply the right bind pose from the joint that is at end of chain.
 Usage:
-    Select an obj / joint / geo and execute the script.
+    Select a controller / joint / geo and execute the script.
 """
 __author__ = "Rémi CUXAC"
 

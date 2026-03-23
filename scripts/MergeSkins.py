@@ -1,20 +1,28 @@
+"""
+In case multiple skin cluster were added on a geo by mistake, this tool helps combine all weights and transfer to a new geo.
+Usage:
+    select the geo that has multiple skin, then the duplicated geo with a default skin cluster, and run the script.
+    the second one should have the same vertex count / ID than the first one, and the same amount of joints in the skin.
+"""
+__author__ = "Rémi CUXAC"
+
 import maya.cmds as cmds
 
 
-def get_skin_cluster(pGeo) -> str:
-    skin = cmds.ls(cmds.listHistory(pGeo), type='skinCluster')
+def get_skin_cluster(geo):
+    skin = cmds.ls(cmds.listHistory(geo), type='skinCluster')
     return skin
 
 
-def get_weights(pGeo, pSkinCluster) -> dict:
-    joints = cmds.skinCluster(pSkinCluster, query=True, influence=True)
-    vertices = cmds.ls(f"{pGeo}.vtx[*]", flatten=True)
+def get_weights(geo, skin_cluster) -> dict:
+    joints = cmds.skinCluster(skin_cluster, query=True, influence=True)
+    vertices = cmds.ls(f"{geo}.vtx[*]", flatten=True)
     weightsDict = {}
     for v in vertices:
         if v not in weightsDict:
             weightsDict[v] = {}
 
-        weight = cmds.skinPercent(pSkinCluster, v, query=True, value=True)
+        weight = cmds.skinPercent(skin_cluster, v, query=True, value=True)
         for i, jnt in enumerate(joints):
             if jnt in weightsDict[v]:
                 weightsDict[v][jnt].append(weight[i])
@@ -26,7 +34,6 @@ def get_weights(pGeo, pSkinCluster) -> dict:
 def merge_skins(*args) -> dict:
     mergedDict = {}
     for skinDict in args:
-        print(skinDict)
         for key, item in skinDict.items():
             if key not in mergedDict:
                 mergedDict[key] = item
@@ -43,27 +50,27 @@ def merge_skins(*args) -> dict:
         if total_weight > 0:
             for jnt, weight in inf.items():
                 mergedDict[v][jnt] = [w / total_weight for w in weight]
-    print(mergedDict)
     return mergedDict
 
 
-def apply_skin_weights(pGeo, pSkinDict):
-    all_joints = set(jnt for vtx_data in pSkinDict.values() for jnt in vtx_data)
-    skin_cluster = get_skin_cluster(pGeo)
+def apply_skin_weights(geo, skin_dict: dict):
+    all_joints = set(jnt for vtx_data in skin_dict.values() for jnt in vtx_data)
+    skin_cluster = get_skin_cluster(geo)
 
     # Bind geometry with joints
     if not skin_cluster:
-        skin_cluster = cmds.skinCluster(list(all_joints), pGeo, toSelectedBones=True)[0]
+        skin_cluster = cmds.skinCluster(list(all_joints), geo, toSelectedBones=True)[0]
     else:
         skin_cluster = skin_cluster[0]
 
-    for vtx, weights in pSkinDict.items():
+    for vtx, weights in skin_dict.items():
         for jnt, weight in weights.items():
-            vtx = pGeo + ".vtx" + vtx.split("vtx")[-1]
+            vtx = geo + ".vtx" + vtx.split("vtx")[-1]
             cmds.skinPercent(skin_cluster, vtx, transformValue=(jnt, weight[0]))
 
 
 def copy_merge_skin(*args):
+    # TODO: make it work for more than 2 skins
     assert 1 <= len(args) <= 2, "Please select one or two geometry"
     source = args[0]
     target = args[1] if len(args) == 2 else source

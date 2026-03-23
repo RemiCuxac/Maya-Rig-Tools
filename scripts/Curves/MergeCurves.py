@@ -1,3 +1,10 @@
+"""
+This script combine multiple curves into one.
+Usage:
+    select any amount of curve transform and run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 from maya import cmds
 
 

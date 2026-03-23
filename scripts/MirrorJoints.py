@@ -1,3 +1,12 @@
+"""
+This script performs a mirror from one site to another on the selected joint and his hierarchy.
+The purpose is to automatically detect the naming of the source and use the correct target naming.
+Also, it will prevent any suspicious error of naming in the newly created list of joints.
+Usage:
+    select a root joint to mirror, and run the script.
+"""
+__author__ = "Rémi CUXAC"
+
 from maya import cmds
 
 leftToRight = {"left": "right", "Left": "Right", "_l_": "_r_", "_L_": "_R_", "_l": "_r", "_L": "_R"}

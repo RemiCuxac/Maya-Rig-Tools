@@ -13,10 +13,6 @@ def read_file(path, json_type=False):
             return f.read()
 
 
-import re
-import os
-
-
 class ShelfParser:
     def __init__(self, file_path):
         self.file_path = file_path

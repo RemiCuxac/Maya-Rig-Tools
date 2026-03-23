@@ -1,5 +1,10 @@
-# script that play each frame and refresh to let user record updates of channel box for demoreel.
-
+"""
+This script allows the user to record the channel box while playing any animation.
+It's very useful for a demoreel.
+Usage:
+    run the script to play your animation.
+"""
+__author__ = "Rémi CUXAC"
 import time
 
 import maya.cmds as cmds
