@@ -6,10 +6,10 @@ global proc shelf_Rigging_Custom () {
 
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -41,10 +41,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -89,10 +89,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -123,10 +123,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -158,10 +158,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -193,10 +193,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -228,10 +228,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -276,10 +276,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -310,10 +310,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -357,10 +357,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -392,10 +392,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
+        -flexibleWidthType 2
         -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -427,10 +427,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
+        -flexibleWidthType 2
         -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -462,10 +462,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -497,10 +497,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -531,10 +531,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -579,10 +579,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -614,10 +614,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
+        -flexibleWidthType 2
         -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -649,10 +649,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -683,10 +683,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -730,10 +730,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -765,10 +765,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -800,10 +800,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -834,10 +834,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -870,10 +870,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -909,10 +909,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -946,10 +946,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
+        -flexibleWidthType 2
         -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -994,10 +994,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
+        -flexibleWidthType 2
         -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1028,10 +1028,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1063,10 +1063,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1111,10 +1111,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1146,10 +1146,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1181,10 +1181,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1216,10 +1216,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1251,10 +1251,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1286,10 +1286,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1321,10 +1321,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
@@ -1356,10 +1356,10 @@ global proc shelf_Rigging_Custom () {
     ;
     shelfButton
         -enableCommandRepeat 1
-        -flexibleWidthType 1
-        -flexibleWidthValue 64
+        -flexibleWidthType 2
+        -flexibleWidthValue 32
         -enable 1
-        -width 34
+        -width 32
         -height 34
         -manage 1
         -visible 1
