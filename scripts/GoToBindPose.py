@@ -12,16 +12,6 @@ from maya import cmds
 from maya.api import OpenMaya as om
 
 
-# TODO: Lorsque le joint as été bougé via le Move Skinned Joint et que j’applique le script sur la géo, j’ai ce warning :
-#  `-- To ensure pose is correct below this joint, add an extra transform above this joint, restore the old parent or manually position the joint to the correct bindPose.`
-# TODO: Je devrais peut-être ne plus passer par dagPose, ou faire un try except où je viens récupérer tous les joints du skin, et appliquer un bind pose sur chaque joint…
-# TODO: Lorsque le joint est contraint en translate et en rotate par deux controllers différents, ça ne fonctionne pas. Soit j’affiche un warning, soit je permet au script de fonctionner.
-# TODO: Lorsque je fais un go To Bind Pose sur un joint qui est contraint, ça ne bouge que le joint, pas le controller.
-# TODO: appliquer le script sur un controller qui ne contraint aucun joint renvoie une erreur, à cause de la ligne 21 :
-#  `joint = [cmds.ls](http://cmds.ls/)(cmds.listHistory(obj, future=True, leaf=False), type="joint")[0]`
-#     `# Error: IndexError: file <maya console> line 21: list index out of range`
-# TODO: Essayer de le faire fonctionner pour un IK, pole vector…
-
 def get_bind_mat(obj):
     if cmds.objectType(obj) == "joint":
         # TODO: use cmds.deformableShape() instead of cmds.listConnections) ?
