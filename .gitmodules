@@ -23,3 +23,6 @@
 [submodule "Mirror-Set-Driven-Keys"]
 	path = tools/Mirror-Set-Driven-Keys
 	url = https://github.com/RemiCuxac/Mirror-Set-Driven-Keys
+[submodule "Aux-Pivot"]
+	path = Aux-Pivot
+	url = https://github.com/RemiCuxac/Aux-Pivot
