@@ -2,20 +2,41 @@ try:
     from PySide6 import QtWidgets, QtCore
 except ModuleNotFoundError:
     from PySide2 import QtWidgets, QtCore
-from maya import cmds
 from collections import namedtuple
+from functools import wraps
+
+from maya import cmds
 
 StatusTheme = namedtuple("Style", ['background', 'color'])
 SUCCESS = StatusTheme("SeaGreen", "white")
 WARNING = StatusTheme("Chocolate", "white")
 ERROR = StatusTheme("IndianRed", "white")
+prefix = "pivot_"
+
+
+def deco_suspend_and_undo(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        cmds.undoInfo(openChunk=True, chunkName=func.__name__)
+        cmds.refresh(suspend=True)
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            raise e
+        finally:
+            cmds.refresh(suspend=False)
+            cmds.undoInfo(closeChunk=True)
+            cmds.refresh()
+
+    return wrapper
+
 
 class FrameWidget(QtWidgets.QGroupBox):
     def __init__(self, name: str):
         super().__init__(name)
         self.create_layout()
         self.connect_signals()
-    
+
     def create_layout(self):
         qhl_layout = QtWidgets.QHBoxLayout()
         self.qsb_frame = QtWidgets.QSpinBox()
@@ -26,15 +47,16 @@ class FrameWidget(QtWidgets.QGroupBox):
         qhl_layout.addWidget(self.qsb_frame)
         qhl_layout.addWidget(self.qpb_set)
         self.setLayout(qhl_layout)
-        
+
     def connect_signals(self):
         self.qpb_set.clicked.connect(self.set_frame)
-    
+
     def get_frame(self):
         return self.qsb_frame.value()
-    
+
     def set_frame(self, frame):
         self.qsb_frame.setValue(frame)
+
 
 class AuxPivotMain(QtWidgets.QMainWindow):
     """
@@ -58,7 +80,7 @@ class AuxPivotMain(QtWidgets.QMainWindow):
 
         self.qpb_create = QtWidgets.QPushButton("Create Aux Pivot")
         self.qpb_bake = QtWidgets.QPushButton("Bake and Remove")
-        
+
         qhl_layout = QtWidgets.QHBoxLayout()
         self.fw_start = FrameWidget("Frame Start")
         self.fw_end = FrameWidget("Frame End")
@@ -83,44 +105,58 @@ class AuxPivotMain(QtWidgets.QMainWindow):
 
     def _on_frame_set_clicked(self):
         """Handles the 'Set' button click on component widgets."""
-        fw:FrameWidget = self.sender().parent()
+        fw: FrameWidget = self.sender().parent()
         fw.set_frame(self._get_current_frame())
 
     def _on_create_clicked(self):
-        sel = cmds.ls(sl=1, type="transform")
+        sel = cmds.ls(sl=True, type="transform")
         cmds.select(clear=True)
         for ctrl in sel:
-            loc = cmds.spaceLocator(name="piv_" + ctrl)[0]
+            loc = cmds.spaceLocator(name=prefix + ctrl)[0]
             cmds.matchTransform(loc, ctrl)
-            parent = cmds.listRelatives(ctrl, parent=True)
-            if parent:
-                cmds.parent(loc, parent[0])
+            cmds.parent(loc, ctrl)
             cmds.connectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot", force=True)
-            # cmds.setAttr(f"{loc}.translateX", 3)
-            # cmds.setAttr(f"{ctrl}.rotateZ", 30)
             cmds.select(loc, add=True)
-        self.send_message("Aux Pivot created and selected", SUCCESS)
+        self.send_message("Aux Pivot created and selected.", SUCCESS)
 
-    def _on_bake_clicked(self, start:int, end:int):
-        # for ctrl in sel:
-        #     cmds.xform(ctrl, zeroTransformPivots=True)
+    @deco_suspend_and_undo
+    def _on_bake_clicked(self, start: int, end: int):
+        sel = cmds.ls(sl=True, type="transform")
+        loc_ctrl = []
+        for elem in sel:
+            if prefix in elem:
+                ctrl_list = cmds.listConnections(f"{elem}.translate", source=False, destination=True)
+                loc_ctrl.append([elem, ctrl_list[0]])
+            else:
+                loc_list = cmds.listConnections(f"{elem}.rotatePivot", source=True, destination=False)
+                if loc_list:
+                    loc_ctrl.append([loc_list[0], elem])
 
-        # for ctrl in sel:
-        #     mat = cmds.xform(ctrl, m=True, ws=True, q=True)
-        #     bake_loc = cmds.spaceLocator(name="bake" + ctrl)[0]
-        #     cmds.xform(bake_loc, m=mat, ws=True)
-        #
-        #     cmds.parentConstraint(ctrl, bake_loc, maintainOffset=True)
-        #
-        #     cmds.bakeResults(bake_loc, t=(0, 50), sb=1)
-        #     cmds.delete(bake_loc, constraints=True)
-        #     cmds.disconnectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot")
-        #
-        #     cmds.xform(ctrl, m=mat, zeroTransformPivots=True)
-        #     cmds.parentConstraint(bake_loc, ctrl, maintainOffset=False)
-        #     cmds.bakeResults(ctrl, t=(0, 50), sb=1)
-        #     cmds.delete(ctrl, constraints=True)
-        #     cmds.delete(bake_loc, loc)
+        start_timeline = cmds.playbackOptions(q=True, min=True)
+        end_timeline = cmds.playbackOptions(q=True, max=True)
+        time = (start_timeline, end_timeline) if start == end else (start, end + 1)
+
+        for (loc, ctrl) in loc_ctrl:
+            bake_loc = cmds.spaceLocator(name="bake" + ctrl)[0]
+            # match on each key
+            for t in range(int(time[0]), int(time[-1])):
+                cmds.currentTime(t)
+                mat = cmds.xform(ctrl, m=True, ws=True, q=True)
+                cmds.xform(bake_loc, m=mat, ws=True)
+                cmds.setKeyframe(bake_loc)
+
+            cmds.disconnectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot")
+            cmds.xform(ctrl, zeroTransformPivots=True)
+            cmds.parentConstraint(bake_loc, ctrl, maintainOffset=True)
+            # key blendParent attr to keep previous and next animation
+            cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[0] - 1, value=0)
+            cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[0], value=1)
+            cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[-1], value=1)
+            cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[-1] + 1, value=0)
+            cmds.bakeResults(ctrl, t=time, sb=1, preserveOutsideKeys=True)
+            cmds.delete(ctrl, constraints=True)
+            cmds.delete([bake_loc, loc])
+
         self.send_message("Anim baked, pivot removed.", SUCCESS)
 
     @staticmethod
