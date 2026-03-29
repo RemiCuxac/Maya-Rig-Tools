@@ -22,6 +22,7 @@ def deco_suspend_and_undo(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
+            cmds.warning(str(e))
             raise e
         finally:
             cmds.refresh(suspend=False)
@@ -82,8 +83,8 @@ class AuxPivotMain(QtWidgets.QMainWindow):
         self.qpb_bake = QtWidgets.QPushButton("Bake and Remove")
 
         qhl_layout = QtWidgets.QHBoxLayout()
-        self.fw_start = FrameWidget("Frame Start")
-        self.fw_end = FrameWidget("Frame End")
+        self.fw_start = FrameWidget("Start frame")
+        self.fw_end = FrameWidget("End frame")
         qhl_layout.addWidget(self.fw_start)
         qhl_layout.addWidget(self.fw_end)
 
@@ -108,6 +109,7 @@ class AuxPivotMain(QtWidgets.QMainWindow):
         fw: FrameWidget = self.sender().parent()
         fw.set_frame(self._get_current_frame())
 
+    @deco_suspend_and_undo
     def _on_create_clicked(self):
         sel = cmds.ls(sl=True, type="transform")
         cmds.select(clear=True)
@@ -122,6 +124,8 @@ class AuxPivotMain(QtWidgets.QMainWindow):
     @deco_suspend_and_undo
     def _on_bake_clicked(self, start: int, end: int):
         sel = cmds.ls(sl=True, type="transform")
+
+        # get list of (loc, ctrl) for each element of selection.
         loc_ctrl = []
         for elem in sel:
             if prefix in elem:
@@ -137,23 +141,41 @@ class AuxPivotMain(QtWidgets.QMainWindow):
         time = (start_timeline, end_timeline) if start == end else (start, end + 1)
 
         for (loc, ctrl) in loc_ctrl:
-            bake_loc = cmds.spaceLocator(name="bake" + ctrl)[0]
-            # match on each key
-            for t in range(int(time[0]), int(time[-1])):
-                cmds.currentTime(t)
-                mat = cmds.xform(ctrl, m=True, ws=True, q=True)
-                cmds.xform(bake_loc, m=mat, ws=True)
-                cmds.setKeyframe(bake_loc)
+            bake_loc = cmds.spaceLocator(name="bake_" + ctrl)[0]
 
+            # # previous method:
+            # for t in range(int(time[0]), int(time[-1])):
+            #     cmds.currentTime(t)
+            #     mat = cmds.xform(ctrl, m=True, ws=True, q=True)
+            #     cmds.xform(bake_loc, m=mat, ws=True)
+            #     cmds.setKeyframe(bake_loc)
+
+            # make bake_loc follows the initial pivot of ctrl
+            mult_node = cmds.createNode("multMatrix")
+            cmds.connectAttr(f"{ctrl}.worldMatrix[0]", f"{mult_node}.matrixIn[0]")
+            cmds.connectAttr(f"{loc}.matrix", f"{mult_node}.matrixIn[1]")
+            cmds.connectAttr(f"{loc}.inverseMatrix", f"{mult_node}.matrixIn[2]")
+            decomp_node = cmds.createNode("decomposeMatrix")
+            cmds.connectAttr(f"{mult_node}.matrixSum", f"{decomp_node}.inputMatrix")
+            cmds.connectAttr(f"{decomp_node}.outputTranslate", f"{bake_loc}.translate")
+            cmds.connectAttr(f"{decomp_node}.outputRotate", f"{bake_loc}.rotate")
+            cmds.connectAttr(f"{decomp_node}.outputScale", f"{bake_loc}.scale")
+            cmds.bakeResults(bake_loc, simulation=True, t=(start_timeline, end_timeline), sb=1)
+            cmds.delete([mult_node, decomp_node])
+
+            # make ctrl follows bake_loc
+            # 1. first reset pivot and connections
             cmds.disconnectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot")
             cmds.xform(ctrl, zeroTransformPivots=True)
+            # 2. then constraint
             cmds.parentConstraint(bake_loc, ctrl, maintainOffset=True)
-            # key blendParent attr to keep previous and next animation
+            # 3. key, and bake
             cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[0] - 1, value=0)
             cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[0], value=1)
             cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[-1], value=1)
             cmds.setKeyframe(ctrl, attribute="blendParent1", time=time[-1] + 1, value=0)
             cmds.bakeResults(ctrl, t=time, sb=1, preserveOutsideKeys=True)
+            # delete constraints, bake_loc and loc
             cmds.delete(ctrl, constraints=True)
             cmds.delete([bake_loc, loc])
 
