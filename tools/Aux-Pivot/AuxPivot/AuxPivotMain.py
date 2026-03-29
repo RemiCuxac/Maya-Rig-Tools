@@ -1,38 +1,153 @@
+try:
+    from PySide6 import QtWidgets, QtCore
+except ModuleNotFoundError:
+    from PySide2 import QtWidgets, QtCore
 from maya import cmds
+from collections import namedtuple
 
-sel= cmds.ls(sl=1, type="transform")
+StatusTheme = namedtuple("Style", ['background', 'color'])
+SUCCESS = StatusTheme("SeaGreen", "white")
+WARNING = StatusTheme("Chocolate", "white")
+ERROR = StatusTheme("IndianRed", "white")
 
-# 1. ----------------- CREATE
-for ctrl in sel:
-    loc = cmds.spaceLocator(name="piv_" + ctrl)[0]
-    cmds.matchTransform(loc, ctrl)
-    parent = cmds.listRelatives(ctrl, parent=True)
-    if parent:
-        cmds.parent(loc, parent[0])
-    cmds.connectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot", force=True)
-    # cmds.setAttr(f"{loc}.translateX", 3)
-    # cmds.setAttr(f"{ctrl}.rotateZ", 30)
-
-
-# for ctrl in sel:
-#     cmds.xform(ctrl, zeroTransformPivots=True)
-
-
-# 2. ----------------- BAKE
-for ctrl in sel:
-    mat = cmds.xform(ctrl, m=True, ws=True, q=True)
-    bake_loc = cmds.spaceLocator(name="bake" + ctrl)[0]
-    cmds.xform(bake_loc, m=mat, ws=True)
-
-    cmds.parentConstraint(ctrl, bake_loc, maintainOffset=True)
-
-    cmds.bakeResults(bake_loc, t=(0, 50), sb=1)
-    cmds.delete(bake_loc, constraints=True)
-    cmds.disconnectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot")
+class FrameWidget(QtWidgets.QGroupBox):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.create_layout()
+        self.connect_signals()
     
-    cmds.xform(ctrl, m=mat, zeroTransformPivots=True)
-    cmds.parentConstraint(bake_loc, ctrl, maintainOffset=False)
-    cmds.bakeResults(ctrl, t=(0, 50), sb=1)
-    cmds.delete(ctrl, constraints=True)
-    cmds.delete(bake_loc, loc)
+    def create_layout(self):
+        qhl_layout = QtWidgets.QHBoxLayout()
+        self.qsb_frame = QtWidgets.QSpinBox()
+        self.qsb_frame.setMinimum(-99999)
+        self.qsb_frame.setMaximum(99999)
+        self.qsb_frame.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
+        self.qpb_set = QtWidgets.QPushButton("<==")
+        qhl_layout.addWidget(self.qsb_frame)
+        qhl_layout.addWidget(self.qpb_set)
+        self.setLayout(qhl_layout)
+        
+    def connect_signals(self):
+        self.qpb_set.clicked.connect(self.set_frame)
     
+    def get_frame(self):
+        return self.qsb_frame.value()
+    
+    def set_frame(self, frame):
+        self.qsb_frame.setValue(frame)
+
+class AuxPivotMain(QtWidgets.QMainWindow):
+    """
+    Main Window for the Weight Transfer tool.
+    Manages the overall layout and user interactions.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Aux Pivot")
+        self.resize(250, 100)
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        self._create_timer()
+        self._create_layout()
+        self._connect_signals()
+
+    def _create_layout(self):
+        """Constructs the main window layout."""
+        self.setCentralWidget(QtWidgets.QWidget())
+        qvl_main_layout = QtWidgets.QVBoxLayout()
+
+        self.qpb_create = QtWidgets.QPushButton("Create Aux Pivot")
+        self.qpb_bake = QtWidgets.QPushButton("Bake and Remove")
+        
+        qhl_layout = QtWidgets.QHBoxLayout()
+        self.fw_start = FrameWidget("Frame Start")
+        self.fw_end = FrameWidget("Frame End")
+        qhl_layout.addWidget(self.fw_start)
+        qhl_layout.addWidget(self.fw_end)
+
+        qvl_main_layout.addWidget(self.qpb_create)
+        qvl_main_layout.addWidget(self.qpb_bake)
+        qvl_main_layout.addLayout(qhl_layout)
+
+        # Finish Main Layout
+        self.centralWidget().setLayout(qvl_main_layout)
+        self.statusBar = self.statusBar()
+
+    def _connect_signals(self):
+        """Connects main window signals."""
+        self.qpb_create.clicked.connect(self._on_create_clicked)
+        self.qpb_bake.clicked.connect(lambda: self._on_bake_clicked(self.fw_start.get_frame(),
+                                                                    self.fw_end.get_frame()))
+        self.fw_start.qpb_set.clicked.connect(self._on_frame_set_clicked)
+        self.fw_end.qpb_set.clicked.connect(self._on_frame_set_clicked)
+
+    def _on_frame_set_clicked(self):
+        """Handles the 'Set' button click on component widgets."""
+        fw:FrameWidget = self.sender().parent()
+        fw.set_frame(self._get_current_frame())
+
+    def _on_create_clicked(self):
+        sel = cmds.ls(sl=1, type="transform")
+        cmds.select(clear=True)
+        for ctrl in sel:
+            loc = cmds.spaceLocator(name="piv_" + ctrl)[0]
+            cmds.matchTransform(loc, ctrl)
+            parent = cmds.listRelatives(ctrl, parent=True)
+            if parent:
+                cmds.parent(loc, parent[0])
+            cmds.connectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot", force=True)
+            # cmds.setAttr(f"{loc}.translateX", 3)
+            # cmds.setAttr(f"{ctrl}.rotateZ", 30)
+            cmds.select(loc, add=True)
+        self.send_message("Aux Pivot created and selected", SUCCESS)
+
+    def _on_bake_clicked(self, start:int, end:int):
+        # for ctrl in sel:
+        #     cmds.xform(ctrl, zeroTransformPivots=True)
+
+        # for ctrl in sel:
+        #     mat = cmds.xform(ctrl, m=True, ws=True, q=True)
+        #     bake_loc = cmds.spaceLocator(name="bake" + ctrl)[0]
+        #     cmds.xform(bake_loc, m=mat, ws=True)
+        #
+        #     cmds.parentConstraint(ctrl, bake_loc, maintainOffset=True)
+        #
+        #     cmds.bakeResults(bake_loc, t=(0, 50), sb=1)
+        #     cmds.delete(bake_loc, constraints=True)
+        #     cmds.disconnectAttr(f"{loc}.translate", f"{ctrl}.rotatePivot")
+        #
+        #     cmds.xform(ctrl, m=mat, zeroTransformPivots=True)
+        #     cmds.parentConstraint(bake_loc, ctrl, maintainOffset=False)
+        #     cmds.bakeResults(ctrl, t=(0, 50), sb=1)
+        #     cmds.delete(ctrl, constraints=True)
+        #     cmds.delete(bake_loc, loc)
+        self.send_message("Anim baked, pivot removed.", SUCCESS)
+
+    @staticmethod
+    def _get_current_frame() -> int:
+        return cmds.currentTime(q=True)
+
+    def _create_timer(self):
+        """Adds a persistent timer for the status bar message."""
+        self.status_timer = QtCore.QTimer(self)
+        self.status_timer.setSingleShot(True)
+        self.status_timer.timeout.connect(self.clear_message)
+
+    def send_message(self, message: str, message_type: StatusTheme, delay: int = 3000):
+        """Sends a message to the status bar with a specific theme."""
+        self.status_timer.stop()
+        self.statusBar.showMessage(message)
+        self.statusBar.setStyleSheet(f"background-color: {message_type.background}; color: {message_type.color}")
+        if delay:
+            self.status_timer.start(delay)
+
+    def clear_message(self):
+        """Clears the status bar message."""
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("")
+
+
+if __name__ == "__main__":
+    # app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
+    ap_view = AuxPivotMain()
+    ap_view.show()
