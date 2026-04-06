@@ -7,7 +7,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -42,7 +42,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -76,7 +76,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 16
+        -width 34
         -height 35
         -manage 1
         -visible 1
@@ -90,7 +90,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -124,7 +124,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -150,7 +150,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "import maya.api.OpenMaya as om\nfrom maya import cmds\n\n\ndef freeze_transform(pObjList: list):\n    for obj in pObjList:\n        if cmds.objectType(obj) == \"joint\":\n            # rotation\n            mat = cmds.xform(obj, q=True, m=True)\n            m = om.MMatrix(mat)\n            mt = om.MTransformationMatrix(m)\n            rot = mt.rotation()\n            rotRad = (rot.x, rot.y, rot.z)\n            rotDeg = [om.MAngle(angle).asDegrees() for angle in rotRad]\n            cmds.setAttr(f\"{obj}.rotate\", 0, 0, 0)\n            cmds.setAttr(f\"{obj}.jointOrient\", *rotDeg)\n            \n            # scale\n            skin = list(set(cmds.listConnections(obj, d=True, s=False, type=\"skinCluster\")))\n            if skin and cmds.getAttr(f\"{obj}.scale\")!=[(1.0, 1.0, 1.0)]:\n                cmds.warning(f\"Bind Pose has been modified since the scale of {obj} has changed. Please reset skin Bind Pose\")\n            listChildren = {}\n            for child in cmds.listRelatives(obj, fullPath=True, children=True) or []:\n                mat = cmds.xform(child, q=True, m=True, ws=True)\n                listChildren[child] = mat\n            cmds.setAttr(f\"{obj}.scale\", 1,1,1)\n            for child in listChildren:\n                cmds.xform(child, m=listChildren[child], ws=True)            \n        else:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True, n=False, pn=True)\n\n\nsel = cmds.ls(sl=1)\nfreeze_transform(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -command "import maya.api.OpenMaya as om\nfrom maya import cmds\n\n\ndef freeze_transform(obj_list: list):\n    for obj in obj_list:\n        if cmds.objectType(obj) == \"joint\":\n            # rotation\n            mat = cmds.xform(obj, q=True, m=True)\n            m = om.MMatrix(mat)\n            mt = om.MTransformationMatrix(m)\n            rot = mt.rotation()\n            rot_rad = (rot.x, rot.y, rot.z)\n            rot_deg = [om.MAngle(angle).asDegrees() for angle in rot_rad]\n            cmds.setAttr(f\"{obj}.rotate\", 0, 0, 0)\n            cmds.setAttr(f\"{obj}.jointOrient\", *rot_deg)\n\n            # scale\n            skin = list(set(cmds.listConnections(obj, d=True, s=False, type=\"skinCluster\") or []))\n            if skin and cmds.getAttr(f\"{obj}.scale\") != [(1.0, 1.0, 1.0)]:\n                cmds.warning(f\"Bind Pose has been modified since the scale of {obj} has changed.\"\n                             f\"Please reset skin Bind Pose\")\n            list_children = {}\n            for child in cmds.listRelatives(obj, fullPath=True, children=True) or []:\n                mat = cmds.xform(child, q=True, m=True, ws=True)\n                list_children[child] = mat\n            cmds.setAttr(f\"{obj}.scale\", 1, 1, 1)\n            for child in list_children:\n                cmds.xform(child, m=list_children[child], ws=True)\n        else:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True, n=False, pn=True)\n\n\nsel = cmds.ls(selection=True)\nfreeze_transform(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
         -sourceType "python" 
         -doubleClickCommand "FreezeTransformationsOptions" 
         -commandRepeatable 1
@@ -159,7 +159,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -194,7 +194,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -229,7 +229,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -263,7 +263,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 16
+        -width 34
         -height 35
         -manage 1
         -visible 1
@@ -277,7 +277,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -311,7 +311,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -344,7 +344,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 16
+        -width 34
         -height 35
         -manage 1
         -visible 1
@@ -358,7 +358,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -463,7 +463,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -498,7 +498,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -532,7 +532,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -566,7 +566,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 16
+        -width 34
         -height 35
         -manage 1
         -visible 1
@@ -580,7 +580,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -650,7 +650,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -684,7 +684,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -717,7 +717,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 16
+        -width 34
         -height 35
         -manage 1
         -visible 1
@@ -731,7 +731,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -766,7 +766,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -801,7 +801,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -827,7 +827,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "import maya.cmds as cmds\n\n\ndef get_all_nurbs_isoparms(n):\n    u = [f\"{n}.u[{i}]\" for i in range(cmds.getAttr(n + \".spansU\") + 1)]\n    v = [f\"{n}.v[{i}]\" for i in range(cmds.getAttr(n + \".spansV\") + 1)]\n    return u + v\n\n\ndef edges_to_single_curve(pObjList: list):\n    all_main_curves = []\n    for shape in pObjList:\n        if cmds.nodeType(shape) == \"mesh\":\n            edges = cmds.ls(shape + \".e[*]\", fl=True)  # all edges\n        elif cmds.nodeType(shape) == \"nurbsSurface\":\n            edges = get_all_nurbs_isoparms(shape)\n        else:\n            continue\n\n        main_curve = None\n        for i, edge in enumerate(edges):\n            try:\n                if cmds.nodeType(shape) == \"mesh\":\n                    curves = cmds.polyToCurve(edge, form=2, degree=1, ch=False)\n                else:\n                    curves = cmds.duplicateCurve(edge, ch=False, local=True)\n                if i == 0:\n                    # first one becomes the main curve transform\n                    main_curve = curves[0]\n                else:\n                    # parent shape node under main curve\n                    shape_nodes = cmds.listRelatives(curves[0], shapes=True, f=True) or []\n                    cmds.parent(shape_nodes, main_curve, shape=True, r=True)\n                    # delete the extra transform\n                    cmds.delete(curves[0])\n            except Exception as e:\n                cmds.warning(\"Failed to convert edge {}: {}\".format(edge, e))\n        if main_curve:\n            if cmds.listRelatives(main_curve, parent=True):\n                main_curve = cmds.parent(main_curve, world=True)\n            main_curve = cmds.rename(main_curve, f\"mergedCurve_{shape.replace('Shape', '')}\")\n            # cmds.matchTransform(main_curve, shape,pivots=True)\n            all_main_curves.append(main_curve)\n    cmds.select(all_main_curves)\n\n\nsel = cmds.ls(sl=True, dag=True, shapes=True)\nedges_to_single_curve(sel) if sel else cmds.error(\"Please select an object.\", n=True)\n" 
+        -command "\"\"\"\nThis script converts any kind of selection to a curve. It works on full mesh, nurbsSurface and even on edge selection.\nUsage:\n    select any edge(s), or objects and run the script. It will create a new curve named \"curve_obj1\".\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef get_all_nurbs_isoparms(n):\n    u = [f\"{n}.u[{i}]\" for i in range(cmds.getAttr(n + \".spansU\") + 1)]\n    v = [f\"{n}.v[{i}]\" for i in range(cmds.getAttr(n + \".spansV\") + 1)]\n    return u + v\n\n\ndef edges_to_single_curve(sel_list: list):\n    all_main_curves = []\n    edges = []\n    for elem in sel_list:\n        if \".e\" in elem:\n            if \":\" in elem:\n                edges += cmds.ls(elem, flatten=True)\n                continue\n            edges += [elem]\n            continue\n        shape: list = cmds.listRelatives(elem, shapes=True)\n        assert len(shape) == 1, f\"Error for getting {elem}\"\n        if cmds.nodeType(shape) == \"mesh\":\n            edges += cmds.ls(elem + \".e[*]\", fl=True)\n        elif cmds.nodeType(shape) == \"nurbsSurface\":\n            edges = get_all_nurbs_isoparms(shape)\n\n    main_curve = None\n    for i, edge in enumerate(edges):\n        try:\n            if cmds.nodeType(edge) == \"mesh\":\n                curves = cmds.polyToCurve(edge, form=2, degree=1, ch=False)\n            else:\n                curves = cmds.duplicateCurve(edge, ch=False, local=True)\n            if i == 0:\n                # first one becomes the main curve transform\n                main_curve = curves[0]\n            else:\n                # parent shape node under main curve\n                shape_nodes = cmds.listRelatives(curves[0], shapes=True, f=True) or []\n                cmds.parent(shape_nodes, main_curve, shape=True, r=True)\n                # delete the extra transform\n                cmds.delete(curves[0])\n        except Exception as e:\n            cmds.warning(\"Failed to convert edge {}: {}\".format(edge, e))\n    if main_curve:\n        if cmds.listRelatives(main_curve, parent=True):\n            main_curve = cmds.parent(main_curve, world=True)\n        main_curve = cmds.rename(main_curve, \"curve_obj1\")\n        # cmds.matchTransform(main_curve, shape,pivots=True)\n        all_main_curves.append(main_curve)\n    cmds.select(all_main_curves)\n\n\nsel = cmds.ls(sl=True)\nedges_to_single_curve(sel) if sel else cmds.error(\"Please select an object.\", n=True)\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -835,7 +835,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -871,7 +871,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -910,7 +910,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -937,7 +937,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "import maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.parentConstraint(newCtrl, bone, maintainOffset=True)\n        if parent:\n            cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" 
+        -command "import maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.parentConstraint(newCtrl, bone, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -981,7 +981,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 16
+        -width 34
         -height 35
         -manage 1
         -visible 1
@@ -995,7 +995,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1029,7 +1029,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1064,7 +1064,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1098,7 +1098,7 @@ global proc shelf_Rigging_Custom () {
     ;
     separator
         -enable 1
-        -width 16
+        -width 34
         -height 35
         -manage 1
         -visible 1
@@ -1112,7 +1112,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1147,7 +1147,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1182,7 +1182,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1217,7 +1217,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1252,7 +1252,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1287,7 +1287,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1322,7 +1322,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -1357,7 +1357,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
