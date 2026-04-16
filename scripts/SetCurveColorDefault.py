@@ -20,17 +20,18 @@ class Color(tuple, Enum):
     DEFAULT = (False, 0)
 
 
-def color_obj(obj_list: list, color: Color):
+def color_obj(obj_list: list, color: Color, color_outliner:bool=True):
     for obj in obj_list:
-        objType = cmds.objectType(obj)
-        if objType == "joint":
-            cmds.setAttr(obj + ".overrideEnabled", color[0])
-            cmds.setAttr(obj + ".overrideColor", color[1])
+        obj_type = cmds.objectType(obj)
+        if obj_type == "joint":
+            sub_obj_list = [obj]
         else:
-            objShape = cmds.listRelatives(obj, shapes=True, fullPath=True) or []
-            for shape in objShape:
-                cmds.setAttr(shape + ".overrideEnabled", color[0])
-                cmds.setAttr(shape + ".overrideColor", color[1])
+            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []
+        for sub_obj in sub_obj_list:
+            cmds.setAttr(sub_obj + ".overrideEnabled", color[0])
+            cmds.setAttr(sub_obj + ".overrideColor", color[1])
+        if color_outliner:
+            cmds.setAttr(obj + ".useOutlinerColor", False)
 
 
 sel = cmds.ls(sl=True)

@@ -1,5 +1,7 @@
 """
 This script bakes all the transformation to the offsetParentMatrix attribute, so it will by animatable without any parent group.
+Usage:
+    Select an object and execute the script.
 """
 __author__ = "Rémi CUXAC"
 

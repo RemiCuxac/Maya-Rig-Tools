@@ -1,6 +1,8 @@
 """
 This script reset the shape to his initial pos, even if a skin modifier has moved some vertices.
 The skin will be updated.
+Usage:
+    Select a skinned geo and execute the script.
 """
 __author__ = "Rémi CUXAC"
 

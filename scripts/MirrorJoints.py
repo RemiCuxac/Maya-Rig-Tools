@@ -13,8 +13,8 @@ leftToRight = {"left": "right", "Left": "Right", "_l_": "_r_", "_L_": "_R_", "_l
 full_mapping = {**leftToRight, **{v: k for k, v in leftToRight.items()}}
 
 
-def mirror_joints(pJntList: list):
-    for obj in pJntList:
+def mirror_joints(joint_list: list):
+    for obj in joint_list:
         for key, value in full_mapping.items():
             if obj.count(key) > 1:  # for objets like jnt_leg_l
                 # because there is no reverse replace, only replace the last occurrence if True :

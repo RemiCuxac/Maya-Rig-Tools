@@ -11,7 +11,7 @@ from maya import cmds
 
 
 def create_curve_link_from_controllers(obj_list: list = None, pName: str = None, suffix: str = "_crv_link"):
-    if not obj_list or (len(obj_list) != 0 and isinstance(obj_list, list)):
+    if not obj_list or (len(obj_list) == 0 and isinstance(obj_list, list)):
         cmds.warning("Please select two objects first.")
         return
     ctrl1 = obj_list[0]
