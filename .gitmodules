@@ -27,5 +27,5 @@
 	path = tools/Aux-Pivot
 	url = https://github.com/RemiCuxac/Aux-Pivot
 [submodule "Maya-Mirror-joints"]
-	path = Maya-Mirror-joints
+	path = tools/Maya-Mirror-joints
 	url = https://github.com/RemiCuxac/Maya-Mirror-joints
