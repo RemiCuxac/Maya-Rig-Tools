@@ -7,7 +7,6 @@
 [submodule "Weight-Transfer"]
 	path = tools/Weight-Transfer
 	url = https://github.com/RemiCuxac/Weight-Transfer
-
 [submodule "Maya-Note-Tool"]
 	path = tools/Maya-Note-Tool
 	url = https://github.com/RemiCuxac/Maya-Note-Tool
@@ -26,6 +25,3 @@
 [submodule "Aux-Pivot"]
 	path = tools/Aux-Pivot
 	url = https://github.com/RemiCuxac/Aux-Pivot
-[submodule "Maya-Mirror-joints"]
-	path = tools/Maya-Mirror-joints
-	url = https://github.com/RemiCuxac/Maya-Mirror-joints
