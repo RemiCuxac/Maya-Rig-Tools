@@ -7,7 +7,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -42,7 +42,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -90,7 +90,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -124,7 +124,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -150,7 +150,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script helps user to freeze transform the joint even if it has a skin attached to it.\nUsage:\n    Select an object (joint or any transform) and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.api.OpenMaya as om\nfrom maya import cmds\n\n\ndef freeze_transform(obj_list: list):\n    for obj in obj_list:\n        if cmds.objectType(obj) == \"joint\":\n            # rotation\n            mat = cmds.xform(obj, q=True, m=True)\n            m = om.MMatrix(mat)\n            mt = om.MTransformationMatrix(m)\n            rot = mt.rotation()\n            rot_rad = (rot.x, rot.y, rot.z)\n            rot_deg = [om.MAngle(angle).asDegrees() for angle in rot_rad]\n            cmds.setAttr(f\"{obj}.rotate\", 0, 0, 0)\n            cmds.setAttr(f\"{obj}.jointOrient\", *rot_deg)\n\n            # scale\n            skin = list(set(cmds.listConnections(obj, d=True, s=False, type=\"skinCluster\") or []))\n            if skin and cmds.getAttr(f\"{obj}.scale\") != [(1.0, 1.0, 1.0)]:\n                cmds.warning(f\"Bind Pose has been modified since the scale of {obj} has changed.\"\n                             f\"Please reset skin Bind Pose\")\n            list_children = {}\n            for child in cmds.listRelatives(obj, fullPath=True, children=True) or []:\n                mat = cmds.xform(child, q=True, m=True, ws=True)\n                list_children[child] = mat\n            cmds.setAttr(f\"{obj}.scale\", 1, 1, 1)\n            for child in list_children:\n                cmds.xform(child, m=list_children[child], ws=True)\n        else:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True, n=False, pn=True)\n\n\nsel = cmds.ls(selection=True)\nfreeze_transform(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -command "\"\"\"\nThis script helps user to freeze transform the joint even if it has a skin attached to it.\nUsage:\n    Select an object (joint or any transform) and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -doubleClickCommand "FreezeTransformationsOptions" 
         -commandRepeatable 1
@@ -159,7 +159,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -186,7 +186,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script bakes all the transformation to the offsetParentMatrix attribute, so it will by animatable without any parent group.\nUsage:\n    Select an object and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.api.OpenMaya as om\nimport maya.cmds as cmds\n\nTRANSFORM_NODETYPES = [\"transform\", \"joint\"]\n\n\ndef has_non_default_locked_attributes(pNode: str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        default_value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                current_value = cmds.getAttr(attribute_name)\n                if cmds.getAttr(attribute_name, lock=True) and current_value != default_value:\n                    return True\n\n\ndef reset_transforms(pNode: str):\n    for attribute in [\"translate\", \"rotate\", \"scale\", \"jointOrient\"]:\n        value = 1 if attribute == \"scale\" else 0\n        for axis in \"XYZ\":\n            if cmds.attributeQuery(attribute + axis, node=pNode, exists=True):\n                attribute_name = f\"{pNode}.{attribute}{axis}\"\n                if not cmds.getAttr(attribute_name, lock=True):\n                    cmds.setAttr(attribute_name, value)\n\n\ndef bake_transform_to_offset_parent_matrix(pObjList: list):\n    for node in pObjList:\n        if cmds.nodeType(node) not in TRANSFORM_NODETYPES:\n            raise ValueError(\"Node {} is not a transform node\".format(node))\n\n        if has_non_default_locked_attributes(node):\n            raise RuntimeError(\"Node {} has at least one non default locked attribute(s)\".format(node))\n\n        local_matrix = om.MMatrix(cmds.xform(node, q=True, m=True, ws=False))\n        offset_parent_matrix = om.MMatrix(cmds.getAttr(node + \".offsetParentMatrix\"))\n        baked_matrix = local_matrix * offset_parent_matrix\n        cmds.setAttr(node + \".offsetParentMatrix\", baked_matrix, type=\"matrix\")\n\n        reset_transforms(node)\n\n\nsel = cmds.ls(sl=True)\nbake_transform_to_offset_parent_matrix(sel) if sel else cmds.error(\"Please select an object\", n=True)\n" 
+        -command "\"\"\"\nThis script bakes all the transformation to the offsetParentMatrix attribute, so it will by animatable without any parent group.\nUsage:\n    Select an object and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -194,7 +194,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -221,7 +221,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script creates a parent group to each object in the selection.\nUsage:\n    select one or more object and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom maya import cmds\n\n\ndef group(obj_list: list):\n    if not obj_list:\n        cmds.group(name=\"grp_01\", empty=True)\n        return\n    for obj in obj_list:\n        obj_name = obj.split(\"|\")[-1]\n        parent = cmds.listRelatives(obj, parent=True, fullPath=True)\n        group_obj = cmds.group(empty=True)\n        cmds.matchTransform(group_obj, obj)\n        cmds.parent(obj, group_obj)\n        if parent:\n            cmds.parent(group_obj, parent[0])\n        cmds.rename(group_obj, f\"grp_{obj_name}\")\n\n\nsel = cmds.ls(sl=1, long=True)\nsel.sort(key=lambda x: x.count(\"|\"), reverse=True)\ngroup(sel)\n" 
+        -command "\"\"\"\nThis script creates a parent group to each object in the selection.\nUsage:\n    select one or more object and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -229,7 +229,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -277,7 +277,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -311,7 +311,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -358,7 +358,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -420,7 +420,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script duplicates the selected joints without the hierarchy and parent unparent it.\nUsage:\n    select one or more joints and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom maya import cmds\n\n\ndef extract_joint(joint_list: list):\n    for joint in joint_list:\n        joint_name = joint.split(\"|\")[-1] if \"|\" in joint else joint\n        new_joint = cmds.duplicate(joint, parentOnly=True)[0]\n        parent = cmds.listRelatives(joint, parent=True)\n        if parent:\n            cmds.parent(new_joint, world=True)\n        radius = cmds.getAttr(f\"{joint}.radius\")\n        cmds.setAttr(f\"{new_joint}.radius\", radius + 1)\n        cmds.rename(new_joint, f\"{joint_name}_to_rename\")\n\n\nsel = cmds.ls(sl=1, type=\"joint\")\nextract_joint(sel) if sel else cmds.warning(\"Please select a joint from your skeleton\", n=True)\n" 
+        -command "\"\"\"\nThis script duplicates the selected joints without the hierarchy and parent unparent it.\nUsage:\n    select one or more joints and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -455,7 +455,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script performs a mirror from one site to another on the selected joint and his hierarchy.\nThe purpose is to automatically detect the naming of the source and use the correct target naming.\nAlso, it will prevent any suspicious error of naming in the newly created list of joints.\nUsage:\n    select a root joint to mirror, and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom maya import cmds\n\nleftToRight = {\"left\": \"right\", \"Left\": \"Right\", \"_l_\": \"_r_\", \"_L_\": \"_R_\", \"_l\": \"_r\", \"_L\": \"_R\"}\nfull_mapping = {**leftToRight, **{v: k for k, v in leftToRight.items()}}\n\n\ndef mirror_joints(joint_list: list):\n    for obj in joint_list:\n        for key, value in full_mapping.items():\n            if obj.count(key) > 1:  # for objets like jnt_leg_l\n                # because there is no reverse replace, only replace the last occurrence if True :\n                if obj.endswith(key) or obj.startswith(key):\n                    if obj.endswith(key):\n                        index = obj.count(key) - 1\n                    else:\n                        index = 1\n                    obj = cmds.rename(obj, obj.replace(key, \"TEMP\", index))\n                    mirrored = cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n                    mirrored.reverse()\n                    for e in mirrored + [obj]:\n                        cmds.rename(e, e.split(\"|\")[-1].replace(\"TEMP\", key))\n                else:\n                    mirrored = cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n                    cmds.warning(f\"Please review naming of {obj} and {', '.join(mirrored)} and his hierarchy\")\n                break\n            elif key in obj:\n                cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n                break\n        else:\n            mirrored = cmds.mirrorJoint(obj, mirrorYZ=True, mirrorBehavior=True, searchReplace=[key, value])\n            cmds.warning(f\"Please review naming of {obj} and {', '.join(mirrored)} and his hierarchy\")\n\n\nsel = cmds.ls(sl=1, type=\"joint\")\nmirror_joints(sel) if sel else cmds.error(\"Please select the root of the chain you want to mirror\", n=True)\n" 
+        -command "\"\"\"\nThis script performs a mirror from one site to another on the selected joint and his hierarchy.\nThe purpose is to automatically detect the naming of the source and use the correct target naming.\nAlso, it will prevent any suspicious error of naming in the newly created list of joints.\nUsage:\n    select a root joint to mirror, and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -463,7 +463,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -490,7 +490,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script allows user to create a range of motion on a selected joint and its hierarchy.\nUsage:\n    Select one joint and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef key_rotate(obj: str):\n    cmds.setKeyframe(obj, attribute='rotateX', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(obj, attribute='rotateY', t=cmds.currentTime(query=True))\n    cmds.setKeyframe(obj, attribute='rotateZ', t=cmds.currentTime(query=True))\n\n\ndef get_rotations(axis):\n    rot_x = [(90, 0, 0), (-180, 0, 0), (90, 0, 0)]\n    rot_y = [(0, 90, 0), (0, -180, 0), (0, 90, 0)]\n    rot_z = [(0, 0, 90), (0, 0, -180), (0, 0, 90)]\n    if axis == \"X\":\n        return rot_x\n    elif axis == \"Y\":\n        return rot_y\n    elif axis == \"Z\":\n        return rot_z\n    return None\n\n\ndef create_range_of_motion(joint_list: list, step: int = 5):\n    cmds.refresh(suspend=True)\n    try:\n        cmds.undoInfo(openChunk=True, chunkName=\"ROM\")\n        for joint in joint_list:\n            # Apply the keyframe and store the current rotation\n            key_rotate(joint)\n            # Iterate through each axis and set the keyframes for the bone\n            for axis in ['X', 'Y', 'Z']:\n                rotations = get_rotations(axis)\n                for rotation in rotations:\n                    cmds.currentTime(cmds.currentTime(query=True) + step)\n                    cmds.rotate(rotation[0], rotation[1], rotation[2], joint, relative=True, componentSpace=True)\n                    key_rotate(joint)\n        cmds.undoInfo(closeChunk=True)\n    except Exception as e:\n        last_undo = cmds.undoInfo(query=True, undoName=True)\n        if last_undo == \"ROM\":\n            cmds.undo()\n        cmds.warning(str(e))\n    cmds.refresh(suspend=False)\n    cmds.currentTime(cmds.currentTime(query=True))\n\n\nsel = cmds.ls(sl=1, type=\"joint\", l=True)\ncreate_range_of_motion(sel) if sel else cmds.warning(\"Please select at least one joint of your skeleton.\")\n" 
+        -command "\"\"\"\nThis script allows user to create a range of motion on a selected joint and its hierarchy.\nUsage:\n    Select one joint and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -498,7 +498,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -524,7 +524,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script performs a \"go to bind pose\" from any kind of object.\nSo you can select a controller, a joint, a geo, and it will apply the right bind pose from the joint that is at end of chain.\nUsage:\n    Select a controller / joint / geo and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport math\n\nfrom maya import cmds\nfrom maya.api import OpenMaya as om\n\n\ndef get_bind_mat(obj):\n    if cmds.objectType(obj) == \"joint\":\n        # TODO: use cmds.deformableShape() instead of cmds.listConnections) ?\n        skin_list = list(set(cmds.ls(cmds.listConnections(f\"{obj}.worldMatrix[0]\", type=\"skinCluster\", p=True))))\n        if skin_list:\n            bind_pre_mat = cmds.getAttr(skin_list[0].replace(\"matrix\", \"bindPreMatrix\"))\n            return om.MMatrix(bind_pre_mat).inverse()\n    return None\n\n\ndef go_to_bind_pose(obj):\n    if cmds.objectType(obj, isType=\"joint\"):\n        target_mat = get_bind_mat(obj)\n        constraint_type = None\n    else:\n        # Controller case - find driven joint\n        joint = cmds.ls(cmds.listHistory(obj, future=True, leaf=False), type=\"joint\")[:1]\n        if not joint:\n            return\n        bind_mat = get_bind_mat(joint)\n        if not bind_mat:\n            return\n\n        constraints = cmds.listConnections(joint, type=\"constraint\", source=True, destination=False) or []\n        constraint_type = cmds.nodeType(constraints[0]) if constraints else None\n\n        # Calculate offset and target\n        joint_mat = om.MMatrix(cmds.xform(joint, q=True, ws=True, m=True))\n        control_mat = om.MMatrix(cmds.xform(obj, q=True, ws=True, m=True))\n        target_mat = (control_mat * joint_mat.inverse()) * bind_mat\n\n    if not target_mat:\n        return\n\n    # Extract transforms\n    mat = om.MTransformationMatrix(target_mat)\n    trans = mat.translation(om.MSpace.kWorld)\n    rot = mat.rotation().reorder(cmds.getAttr(f\"{obj}.rotateOrder\"))\n    scale = mat.scale(om.MSpace.kWorld)\n\n    # Apply based on constraint type\n    if constraint_type == 'orientConstraint':\n        cmds.xform(obj, ws=True, ro=[math.degrees(angle) for angle in rot])\n    elif constraint_type == 'pointConstraint':\n        cmds.xform(obj, ws=True, t=trans)\n    else:\n        cmds.xform(obj, ws=True, t=trans, ro=[math.degrees(angle) for angle in rot], s=scale)\n\n\ndef process_bind_pose(obj_list: list):\n    for obj in obj_list:\n        if cmds.objectType(obj, isType=\"joint\"):\n            # Process from parent to child\n            hierarchy = [obj] + (cmds.listRelatives(obj, allDescendents=True, fullPath=True, type=\"joint\") or [])\n            hierarchy.sort(key=len)\n            for jnt in hierarchy:\n                go_to_bind_pose(jnt)\n        elif cmds.objectType(obj, isType=\"transform\"):\n            shape = cmds.listRelatives(obj, shapes=True, noIntermediate=True)\n            if cmds.objectType(shape) == \"mesh\":  # process for geos\n                skin = cmds.listConnections(shape, type=\"skinCluster\")\n                dag_pose = cmds.listConnections(skin, type=\"dagPose\")\n                cmds.dagPose(obj, dag_pose, r=True, g=True)\n            elif cmds.objectType(shape) == \"nurbsCurve\":  # process for controllers\n                go_to_bind_pose(obj)\n\n\nsel = cmds.ls(sl=1, long=True)\nprocess_bind_pose(sel)\n" 
+        -command "\"\"\"\nThis script performs a \"go to bind pose\" from any kind of object.\nSo you can select a controller, a joint, a geo, and it will apply the right bind pose from the joint that is at end of chain.\nUsage:\n    Select a controller / joint / geo and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -532,7 +532,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -559,7 +559,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script creates a locator from the position and orientation of the gizmo.\nIt can work from any kind of selection (vertex, edge, face, transform...).\nIf nothing selected, it creates the locator at origin.\nUsage:\n    Select an object and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom maya import cmds\n\n\ndef get_gizmo_pos():\n    \"\"\"\n    Detects the active tool and queries its specific position.\n    Works for Move, Rotate, and Scale.\n    \"\"\"\n    ctx = cmds.currentCtx()\n    ctx_type = cmds.contextInfo(ctx, c=True)\n    ctx_name = ctx_type.split(\"manip\")[-1]\n    if ctx_type == 'manipMove':\n        return cmds.manipMoveContext(ctx_name, q=True, p=True)\n    elif ctx_type == 'manipRotate':\n        return cmds.manipRotateContext(ctx_name, q=True, p=True)\n    elif ctx_type == 'manipScale':\n        return cmds.manipScaleContext(ctx_name, q=True, p=True)\n\n    # Fallback if no manip tool is active (e.g., Select Tool)\n    # Returns the pivot of the selection in world space\n    return cmds.xform(q=True, ws=True, piv=True)[:3]\n\n\ndef create_loc_from_gizmo(obj_list: list):\n    prev_obj_name = \"\"\n    if not obj_list:\n        cmds.spaceLocator(name=\"locator_01\")\n        return\n    for obj in obj_list:\n        obj_name = obj.split('|')[-1].split('.')[0]\n        mat = cmds.xform(obj, q=True, ws=True, m=True)\n        pos = get_gizmo_pos()\n\n        if obj_name == prev_obj_name:\n            continue\n        prev_obj_name = obj_name\n        obj = cmds.spaceLocator(name=f\"locator_{obj_name}\")\n        # cmds.setToolTo(\"moveSuperContext\")\n        cmds.xform(obj, ws=True, m=mat)\n        cmds.xform(obj, ws=True, translation=pos)\n\n\nsel = cmds.ls(sl=1)\ncreate_loc_from_gizmo(sel)\n" 
+        -command "\"\"\"\nThis script creates a locator from the position and orientation of the gizmo.\nIt can work from any kind of selection (vertex, edge, face, transform...).\nIf nothing selected, it creates the locator at origin.\nUsage:\n    Select an object and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -580,7 +580,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -642,7 +642,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script reset the shape to his initial pos, even if a skin modifier has moved some vertices.\nThe skin will be updated.\nUsage:\n    Select a skinned geo and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom maya import cmds\n\n\ndef reset_skin_pose():\n    skinList = []\n    for obj in sel:\n        history = cmds.listHistory(obj, future=True) if cmds.objectType(obj, isType=\"joint\") else cmds.listHistory(obj)\n        skinList = cmds.ls(history, type=\"skinCluster\")\n        for skin in skinList:\n            plugs = cmds.listAttr(f\"{skin}.matrix\", multi=True) or []\n            indices = [int(p.split('[')[-1][:-1]) for p in plugs]\n            for i in indices:\n                bindedJoint = cmds.listConnections(skin + '.matrix[' + str(i) + ']', destination=False)[0]\n                wInvMtx = cmds.getAttr(bindedJoint + '.worldInverseMatrix')\n                cmds.setAttr(skin + '.bindPreMatrix[' + str(i) + ']', wInvMtx, type='matrix')\n    if skinList:\n        cmds.inViewMessage(amg='<hl>Done !</hl>.', pos='botCenter', fade=True)\n\n\ndef reset_bind_pose():\n    dagPoses = cmds.ls(type=\"dagPose\")\n    cmds.delete(dagPoses)\n    cmds.dagPose(cmds.ls(type=\"joint\"), s=True, bp=True)\n\n\nsel = cmds.ls(sl=True, type=\"transform\")\nif sel:\n    reset_skin_pose()\n    reset_bind_pose()\nelse:\n    cmds.error(\"Please selet at least one skinned object.\", n=True)\n" 
+        -command "\"\"\"\nThis script reset the shape to his initial pos, even if a skin modifier has moved some vertices.\nThe skin will be updated.\nUsage:\n    Select a skinned geo and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -650,7 +650,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -676,7 +676,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script export the skin inside a json file, to be imported further.\nUsage:\n    Select one or more geos and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef get_skin_cluster(obj):\n    return cmds.ls(cmds.findDeformers(obj), type=\"skinCluster\")\n\n\ndef check_naming():\n    skel = cmds.ls(type=\"joint\")\n    list_errors = [bone.split(\"|\")[-1] for bone in skel if \"|\" in bone]\n    list_errors = list(set(list_errors))\n    if list_errors:\n        message = \"The followings bones has the same name than another bone :\\n\"\n        for bone in list_errors:\n            message += f\"\\n{bone}\"\n        cmds.confirmDialog(title=\"Problem\", message=message, button=\"OK\")\n        return False\n    return True\n\n\ndef export_selected_skins(pGeoList):\n    if not check_naming():\n        return\n\n    folder = cmds.fileDialog2(dialogStyle=1, fileMode=3)\n    folder = folder[0] if folder else None\n    for geo in pGeoList:\n        skin_deformer = get_skin_cluster(geo)\n        if skin_deformer:\n            cmds.deformerWeights(geo + \".json\", format=\"JSON\", path=folder, export=True,\n                                 deformer=str(skin_deformer[0]))\n        else:\n            cmds.confirmDialog(title=\"Problem\", message=f\"No skin cluster applied to {geo}. Export aborted.\",\n                               button=\"OK\")\n            return\n    cmds.confirmDialog(title=\"Good\", message=\"Done !\", button=\"OK\")\n\n\nsel = cmds.ls(sl=1, type=\"transform\")\nexport_selected_skins(sel) if sel else cmds.error(\"Please select at least one geo\", n=True)\n" 
+        -command "\"\"\"\nThis script export the skin inside a json file, to be imported further.\nUsage:\n    Select one or more geos and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -684,7 +684,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -710,7 +710,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script import the skin from a json file. It will also create the skin cluster if the geo isn't skinned.\nUsage:\n    Select one or more geos and execute the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport json\nimport os\n\nimport maya.cmds as cmds\n\n\ndef get_skin_cluster(obj):\n    return cmds.ls(cmds.findDeformers(obj), type=\"skinCluster\")\n\n\ndef get_skinned_joints_from_json(file):\n    assert os.path.exists(file), f\"Wrong path for {file}\"\n    jsonData = json.load(open(file))\n    jointList = [weight[\"source\"] for weight in jsonData[\"deformerWeight\"][\"weights\"]]\n    return jointList\n\n\ndef import_selected_skins():\n    files = cmds.fileDialog2(fileFilter=\"*.json\", dialogStyle=1, fileMode=4)\n    if files:\n        list_errors = []\n        for f in files:\n            geo_name = f.split(\".\")[-2].split(\"/\")[-1]\n            if geo_name in cmds.ls(type=\"transform\"):\n                skin_deformer = get_skin_cluster(geo_name)\n                if not skin_deformer:\n                    # shape = cmds.listRelatives(geo_name, shapes=True)[0]\n                    skel = get_skinned_joints_from_json(f)\n                    cmds.skinCluster(skel, geo_name, tsb=1)\n                    skin_deformer = get_skin_cluster(geo_name)\n                    cmds.skinPercent(skin_deformer[0], geo_name, normalize=True)\n                cmds.deformerWeights(f.split(\"/\")[-1], im=True, format=\"JSON\", method=\"index\",\n                                     deformer=skin_deformer[0],\n                                     path=f.rsplit(\"/\", 1)[0])\n                cmds.skinPercent(skin_deformer[0], geo_name, normalize=True)\n            else:\n                list_errors.append(geo_name)\n        if list_errors:\n            message = \"The followings geos has not been found :\\n\"\n            for geo in list_errors:\n                message += f\"\\n{geo}\"\n            cmds.confirmDialog(title=\"Problem\", message=message, button=\"OK\")\n        else:\n            cmds.confirmDialog(title=\"Good\", message=\"Done !\", button=\"OK\")\n\n\nimport_selected_skins()\n" 
+        -command "\"\"\"\nThis script import the skin from a json file. It will also create the skin cluster if the geo isn't skinned.\nUsage:\n    Select one or more geos and execute the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -731,7 +731,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -766,7 +766,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -793,7 +793,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script combine multiple curves into one.\nUsage:\n    select any amount of curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom maya import cmds\n\n\ndef merge_curves(pObjList: list):\n    group = cmds.group(n=\"mygroup1\", empty=True)\n\n    ## To set the pivot to the first selected object, uncomment the following line:\n    # cmds.matchTransform(group, pObjList[0], pivots=True)\n\n    for obj in pObjList:\n        shapeList = cmds.listRelatives(obj, shapes=True, fullPath=True)\n        for shape in shapeList:\n            cmds.makeIdentity(obj, apply=True, t=True, r=True, s=True)\n            cmds.parent(shape, group, shape=True, r=True)\n        cmds.delete(obj)\n\n    ## to move the new group to the center of the world, uncomment the following lines:\n    # cmds.move(0, 0, 0,group, rpr=True)\n    # cmds.makeIdentity(group, apply=True, t=True, r=True, s=True)\n\n    cmds.delete(group, constructionHistory=True)\n    cmds.select(group)\n    cmds.rename(group, pObjList[0])\n\n\nsel = cmds.ls(sl=1, type=\"transform\")\nmerge_curves(sel) if (sel and len(sel) >= 2) else cmds.error(\"Please select at least two curves\", n=True)\n" 
+        -command "\"\"\"\nThis script combine multiple curves into one.\nUsage:\n    select any amount of curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -801,7 +801,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -827,7 +827,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script converts any kind of selection to a curve. It works on full mesh, nurbsSurface and even on edge selection.\nUsage:\n    select any edge(s), or objects and run the script. It will create a new curve named \"curve_obj1\".\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef get_all_nurbs_isoparms(n):\n    u = [f\"{n}.u[{i}]\" for i in range(cmds.getAttr(n + \".spansU\") + 1)]\n    v = [f\"{n}.v[{i}]\" for i in range(cmds.getAttr(n + \".spansV\") + 1)]\n    return u + v\n\n\ndef edges_to_single_curve(sel_list: list):\n    all_main_curves = []\n    edges = []\n    for elem in sel_list:\n        if \".e\" in elem:\n            if \":\" in elem:\n                edges += cmds.ls(elem, flatten=True)\n                continue\n            edges += [elem]\n            continue\n        shape: list = cmds.listRelatives(elem, shapes=True)\n        assert len(shape) == 1, f\"Error for getting {elem}\"\n        if cmds.nodeType(shape) == \"mesh\":\n            edges += cmds.ls(elem + \".e[*]\", fl=True)\n        elif cmds.nodeType(shape) == \"nurbsSurface\":\n            edges = get_all_nurbs_isoparms(shape)\n\n    main_curve = None\n    for i, edge in enumerate(edges):\n        try:\n            if cmds.nodeType(edge) == \"mesh\":\n                curves = cmds.polyToCurve(edge, form=2, degree=1, ch=False)\n            else:\n                curves = cmds.duplicateCurve(edge, ch=False, local=True)\n            if i == 0:\n                # first one becomes the main curve transform\n                main_curve = curves[0]\n            else:\n                # parent shape node under main curve\n                shape_nodes = cmds.listRelatives(curves[0], shapes=True, f=True) or []\n                cmds.parent(shape_nodes, main_curve, shape=True, r=True)\n                # delete the extra transform\n                cmds.delete(curves[0])\n        except Exception as e:\n            cmds.warning(\"Failed to convert edge {}: {}\".format(edge, e))\n    if main_curve:\n        if cmds.listRelatives(main_curve, parent=True):\n            main_curve = cmds.parent(main_curve, world=True)\n        main_curve = cmds.rename(main_curve, \"curve_obj1\")\n        # cmds.matchTransform(main_curve, shape,pivots=True)\n        all_main_curves.append(main_curve)\n    cmds.select(all_main_curves)\n\n\nsel = cmds.ls(sl=True)\nedges_to_single_curve(sel) if sel else cmds.error(\"Please select an object.\", n=True)\n" 
+        -command "\"\"\"\nThis script converts any kind of selection to a curve. It works on full mesh, nurbsSurface and even on edge selection.\nUsage:\n    select any edge(s), or objects and run the script. It will create a new curve named \"curve_obj1\".\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -835,7 +835,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -871,7 +871,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -910,7 +910,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -937,7 +937,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script creates a controller, his parent group and the constraint to the selected joint.\nUsage:\n    Select the joint you want to constrain and setup, then run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.parentConstraint(newCtrl, bone, maintainOffset=True)\n        # if parent:\n        #     cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" 
+        -command "\"\"\"\nThis script creates a controller, his parent group and the constraint to the selected joint.\nUsage:\n    Select the joint you want to constrain and setup, then run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -972,7 +972,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script updates any constraint after moving the constrained object.\nUsage:\n    move any constrained object, then run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom maya import cmds\n\n\ndef update_offset_constraint(obj_list):\n    if not obj_list: cmds.warning(\"Please select an constrained object or the constraint you want to update.\");return\n    constraint = list(set(cmds.ls(cmds.listConnections(obj_list, destination=False), type=\"constraint\")))\n    if not constraint: cmds.warning(\n        \"No constraint applied to the object. Please select a another constrained objet or constraint.\");return\n    for const in constraint:\n        const_type = cmds.nodeType(const)\n        function = getattr(cmds, const_type)\n        driver_list = function(const, q=True, targetList=True)\n        if not driver_list: cmds.warning(\"The constraint is driven by nothing.\");return\n        weight_list = function(driver_list, obj_list, q=True, w=True)\n        weight_list = weight_list if isinstance(weight_list, list) else [weight_list]\n        for driver, weight in zip(driver_list, weight_list):\n            function(driver, obj_list, e=True, maintainOffset=True, w=weight)\n\n\nsel = cmds.ls(sl=1)\nupdate_offset_constraint(sel)\n" 
+        -command "\"\"\"\nThis script updates any constraint after moving the constrained object.\nUsage:\n    move any constrained object, then run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -993,7 +993,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1027,7 +1027,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1089,7 +1089,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "from maya import cmds\n\ntry:\n    from PySide2 import QtWidgets, QtCore\nexcept ModuleNotFoundError:\n    from PySide6 import QtWidgets, QtCore\n\n\ndef group_by(main_list: list, size: int = 2) -> list:\n    \"\"\"This function returns a list with nested lists by length of param 'size'.\"\"\"\n    return [main_list[i:i + size] for i in range(0, len(main_list), size)]\n\n\nclass MirrorSDK(QtWidgets.QWidget):\n    def __init__(self):\n        super().__init__()\n        self.left_side = \"left\"\n        self.right_side = \"right\"\n        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)\n        self.setWindowTitle(\"Mirror SDK\")\n        self.create_layout()\n        self.connect_buttons()\n        self.setMinimumWidth(230)\n        self.show()\n\n    def create_layout(self):\n        ql_left = QtWidgets.QLabel(\"Left\")\n        self.qle_left = QtWidgets.QLineEdit(self.left_side)\n        ql_right = QtWidgets.QLabel(\"Right\")\n        self.qle_right = QtWidgets.QLineEdit(self.right_side)\n        self.qpb_mirror = QtWidgets.QPushButton(\"Mirror SDK\")\n        qvl_layout = QtWidgets.QVBoxLayout()\n        qhl_layout1 = QtWidgets.QHBoxLayout()\n        qhl_layout2 = QtWidgets.QHBoxLayout()\n        qhl_layout1.addWidget(ql_left)\n        qhl_layout1.addWidget(self.qle_left)\n        qhl_layout2.addWidget(ql_right)\n        qhl_layout2.addWidget(self.qle_right)\n        qvl_layout.addLayout(qhl_layout1)\n        qvl_layout.addLayout(qhl_layout2)\n        qvl_layout.addWidget(self.qpb_mirror)\n        self.setLayout(qvl_layout)\n\n    def connect_buttons(self):\n        self.qpb_mirror.clicked.connect(self.mirror)\n\n    def mirror(self):\n        self.left_side = self.qle_left.text()\n        self.right_side = self.qle_right.text()\n        sel = cmds.ls(sl=True)\n        attrs = cmds.channelBox(\"mainChannelBox\", q=True, sma=True)\n        if sel and attrs:\n            for obj in sel:\n                for attr in attrs:\n                    self.iter_nodes(f\"{obj}.{attr}\")\n            self.close()\n        else:\n            cmds.warning(\"Please select a control and one or more attribute\")\n\n    def get_or_duplicate(self, name: str) -> str:\n        \"\"\"Return a mirrored or duplicated node.\"\"\"\n        if cmds.ls(name, type=\"transform\"):\n            return name.replace(self.left_side, self.right_side, 1)\n        existing = cmds.ls(name + \"_copy\")\n        if existing:\n            return existing[0]\n        return cmds.duplicate(name, name=name + \"_copy\")[0]\n\n    def iter_nodes(self, src):\n        \"\"\"Recursively copy and reconnect attribute pairs.\"\"\"\n        connections = cmds.listConnections(src, plugs=True, source=False, destination=True, connections=True) or []\n        for a, b in group_by(connections, 2):\n            aName, aAttr = a.split(\".\")\n            bName, bAttr = b.split(\".\")\n            aCopy = self.get_or_duplicate(aName)\n            bCopy = self.get_or_duplicate(bName)\n            cmds.connectAttr(f\"{aCopy}.{aAttr}\", f\"{bCopy}.{bAttr}\", force=True)\n            if not cmds.ls(bName, type=\"transform\"):\n                self.iter_nodes(bName)\n\ntool = MirrorSDK()\n" 
+        -command "from maya import cmds\n\ntry:\n    from PySide2 import QtWidgets, QtCore\nexcept ModuleNotFoundError:\n    from PySide6 import QtWidgets, QtCore\n\n\ndef group_by(main_list: list, size: int = 2) -> list:\n    \"\"\"This function returns a list with nested lists by length of param 'size'.\"\"\"\n    return [main_list[i:i + size] for i in range(0, len(main_list), size)]\n\n\nclass MirrorSDK(QtWidgets.QWidget):\n    def __init__(self):\n        super().__init__()\n        self.left_side = \"left\"\n        self.right_side = \"right\"\n        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)\n        self.setWindowTitle(\"Mirror SDK\")\n        self.create_layout()\n        self.connect_buttons()\n        self.setMinimumWidth(230)\n        self.show()\n\n    def create_layout(self):\n        ql_left = QtWidgets.QLabel(\"Left\")\n        self.qle_left = QtWidgets.QLineEdit(self.left_side)\n        ql_right = QtWidgets.QLabel(\"Right\")\n        self.qle_right = QtWidgets.QLineEdit(self.right_side)\n        self.qpb_mirror = QtWidgets.QPushButton(\"Mirror SDK\")\n        qvl_layout = QtWidgets.QVBoxLayout()\n        qhl_layout1 = QtWidgets.QHBoxLayout()\n        qhl_layout2 = QtWidgets.QHBoxLayout()\n        qhl_layout1.addWidget(ql_left)\n        qhl_layout1.addWidget(self.qle_left)\n        qhl_layout2.addWidget(ql_right)\n        qhl_layout2.addWidget(self.qle_right)\n        qvl_layout.addLayout(qhl_layout1)\n        qvl_layout.addLayout(qhl_layout2)\n        qvl_layout.addWidget(self.qpb_mirror)\n        self.setLayout(qvl_layout)\n\n    def connect_buttons(self):\n        self.qpb_mirror.clicked.connect(self.mirror)\n\n    def mirror(self):\n        self.left_side = self.qle_left.text()\n        self.right_side = self.qle_right.text()\n        sel = cmds.ls(sl=True)\n        attrs = cmds.channelBox(\"mainChannelBox\", q=True, sma=True)\n        if sel and attrs:\n            for obj in sel:\n                for attr in attrs:\n                    self.iter_nodes(f\"{obj}.{attr}\")\n        else:\n            cmds.warning(\"Please select a control and one or more attribute\")\n\n    def get_or_duplicate(self, name: str) -> str:\n        \"\"\"Return a mirrored or duplicated node.\"\"\"\n        if cmds.ls(name, type=\"transform\"):\n            return name.replace(self.left_side, self.right_side, 1)\n        existing = cmds.ls(name + \"_copy\")\n        if existing:\n            return existing[0]\n        return cmds.duplicate(name, name=name + \"_copy\")[0]\n\n    def iter_nodes(self, src):\n        \"\"\"Recursively copy and reconnect attribute pairs.\"\"\"\n        connections = cmds.listConnections(src, plugs=True, source=False, destination=True, connections=True) or []\n        for a, b in group_by(connections, 2):\n            aName, aAttr = a.split(\".\")\n            bName, bAttr = b.split(\".\")\n            aCopy = self.get_or_duplicate(aName)\n            bCopy = self.get_or_duplicate(bName)\n            cmds.connectAttr(f\"{aCopy}.{aAttr}\", f\"{bCopy}.{bAttr}\", force=True)\n            if not cmds.ls(bName, type=\"transform\"):\n                self.iter_nodes(bName)\n\ntool = MirrorSDK()\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -1110,7 +1110,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1137,7 +1137,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom enum import Enum\n\nfrom maya import cmds\n\n\nclass Color(tuple, Enum):\n    RED = (True, 13)\n    WHITE = (True, 16)\n    YELLOW = (True, 17)\n    BLUE = (True, 18)\n    PINK = (True, 20)\n    GREEN = (True, 27)\n    DEFAULT = (False, 0)\n\n\ndef color_obj(obj_list: list, color: Color, color_outliner:bool=True):\n    for obj in obj_list:\n        obj_type = cmds.objectType(obj)\n        if obj_type == \"joint\":\n            sub_obj_list = [obj]\n        else:\n            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for sub_obj in sub_obj_list:\n            cmds.setAttr(sub_obj + \".overrideEnabled\", color[0])\n            cmds.setAttr(sub_obj + \".overrideColor\", color[1])\n        if color_outliner:\n            color_rgb:list = cmds.colorIndex(color[1], q=True)\n            cmds.setAttr(obj + \".useOutlinerColor\", True)\n            cmds.setAttr(obj + \".outlinerColor\", *color_rgb)\n\n\nsel = cmds.ls(sl=True)\ncolor_obj(sel, Color.RED) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -1145,7 +1145,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1172,7 +1172,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom enum import Enum\n\nfrom maya import cmds\n\n\nclass Color(tuple, Enum):\n    RED = (True, 13)\n    WHITE = (True, 16)\n    YELLOW = (True, 17)\n    BLUE = (True, 18)\n    PINK = (True, 20)\n    GREEN = (True, 27)\n    DEFAULT = (False, 0)\n\n\ndef color_obj(obj_list: list, color: Color, color_outliner:bool=True):\n    for obj in obj_list:\n        obj_type = cmds.objectType(obj)\n        if obj_type == \"joint\":\n            sub_obj_list = [obj]\n        else:\n            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for sub_obj in sub_obj_list:\n            cmds.setAttr(sub_obj + \".overrideEnabled\", color[0])\n            cmds.setAttr(sub_obj + \".overrideColor\", color[1])\n        if color_outliner:\n            color_rgb:list = cmds.colorIndex(color[1], q=True)\n            cmds.setAttr(obj + \".useOutlinerColor\", True)\n            cmds.setAttr(obj + \".outlinerColor\", *color_rgb)\n\n\nsel = cmds.ls(sl=True)\ncolor_obj(sel, Color.GREEN) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -1180,7 +1180,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1207,7 +1207,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom enum import Enum\n\nfrom maya import cmds\n\n\nclass Color(tuple, Enum):\n    RED = (True, 13)\n    WHITE = (True, 16)\n    YELLOW = (True, 17)\n    BLUE = (True, 18)\n    PINK = (True, 20)\n    GREEN = (True, 27)\n    DEFAULT = (False, 0)\n\n\ndef color_obj(obj_list: list, color: Color, color_outliner:bool=True):\n    for obj in obj_list:\n        obj_type = cmds.objectType(obj)\n        if obj_type == \"joint\":\n            sub_obj_list = [obj]\n        else:\n            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for sub_obj in sub_obj_list:\n            cmds.setAttr(sub_obj + \".overrideEnabled\", color[0])\n            cmds.setAttr(sub_obj + \".overrideColor\", color[1])\n        if color_outliner:\n            color_rgb:list = cmds.colorIndex(color[1], q=True)\n            cmds.setAttr(obj + \".useOutlinerColor\", True)\n            cmds.setAttr(obj + \".outlinerColor\", *color_rgb)\n\n\nsel = cmds.ls(sl=True)\ncolor_obj(sel, Color.BLUE) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -1215,7 +1215,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1242,7 +1242,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom enum import Enum\n\nfrom maya import cmds\n\n\nclass Color(tuple, Enum):\n    RED = (True, 13)\n    WHITE = (True, 16)\n    YELLOW = (True, 17)\n    BLUE = (True, 18)\n    PINK = (True, 20)\n    GREEN = (True, 27)\n    DEFAULT = (False, 0)\n\n\ndef color_obj(obj_list: list, color: Color, color_outliner:bool=True):\n    for obj in obj_list:\n        obj_type = cmds.objectType(obj)\n        if obj_type == \"joint\":\n            sub_obj_list = [obj]\n        else:\n            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for sub_obj in sub_obj_list:\n            cmds.setAttr(sub_obj + \".overrideEnabled\", color[0])\n            cmds.setAttr(sub_obj + \".overrideColor\", color[1])\n        if color_outliner:\n            color_rgb:list = cmds.colorIndex(color[1], q=True)\n            cmds.setAttr(obj + \".useOutlinerColor\", True)\n            cmds.setAttr(obj + \".outlinerColor\", *color_rgb)\n\n\nsel = cmds.ls(sl=True)\ncolor_obj(sel, Color.YELLOW) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -1250,7 +1250,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1277,7 +1277,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom enum import Enum\n\nfrom maya import cmds\n\n\nclass Color(tuple, Enum):\n    RED = (True, 13)\n    WHITE = (True, 16)\n    YELLOW = (True, 17)\n    BLUE = (True, 18)\n    PINK = (True, 20)\n    GREEN = (True, 27)\n    DEFAULT = (False, 0)\n\n\ndef color_obj(obj_list: list, color: Color, color_outliner:bool=True):\n    for obj in obj_list:\n        obj_type = cmds.objectType(obj)\n        if obj_type == \"joint\":\n            sub_obj_list = [obj]\n        else:\n            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for sub_obj in sub_obj_list:\n            cmds.setAttr(sub_obj + \".overrideEnabled\", color[0])\n            cmds.setAttr(sub_obj + \".overrideColor\", color[1])\n        if color_outliner:\n            color_rgb:list = cmds.colorIndex(color[1], q=True)\n            cmds.setAttr(obj + \".useOutlinerColor\", True)\n            cmds.setAttr(obj + \".outlinerColor\", *color_rgb)\n\n\nsel = cmds.ls(sl=True)\ncolor_obj(sel, Color.PINK) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -1285,7 +1285,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1312,7 +1312,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom enum import Enum\n\nfrom maya import cmds\n\n\nclass Color(tuple, Enum):\n    RED = (True, 13)\n    WHITE = (True, 16)\n    YELLOW = (True, 17)\n    BLUE = (True, 18)\n    PINK = (True, 20)\n    GREEN = (True, 27)\n    DEFAULT = (False, 0)\n\n\ndef color_obj(obj_list: list, color: Color, color_outliner:bool=True):\n    for obj in obj_list:\n        obj_type = cmds.objectType(obj)\n        if obj_type == \"joint\":\n            sub_obj_list = [obj]\n        else:\n            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for sub_obj in sub_obj_list:\n            cmds.setAttr(sub_obj + \".overrideEnabled\", color[0])\n            cmds.setAttr(sub_obj + \".overrideColor\", color[1])\n        if color_outliner:\n            color_rgb:list = cmds.colorIndex(color[1], q=True)\n            cmds.setAttr(obj + \".useOutlinerColor\", True)\n            cmds.setAttr(obj + \".outlinerColor\", *color_rgb)\n\n\nsel = cmds.ls(sl=True)\ncolor_obj(sel, Color.WHITE) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -1320,7 +1320,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -1347,7 +1347,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"Rémi CUXAC\"\n\nfrom enum import Enum\n\nfrom maya import cmds\n\n\nclass Color(tuple, Enum):\n    RED = (True, 13)\n    WHITE = (True, 16)\n    YELLOW = (True, 17)\n    BLUE = (True, 18)\n    PINK = (True, 20)\n    GREEN = (True, 27)\n    DEFAULT = (False, 0)\n\n\ndef color_obj(obj_list: list, color: Color, color_outliner:bool=True):\n    for obj in obj_list:\n        obj_type = cmds.objectType(obj)\n        if obj_type == \"joint\":\n            sub_obj_list = [obj]\n        else:\n            sub_obj_list = cmds.listRelatives(obj, shapes=True, fullPath=True) or []\n        for sub_obj in sub_obj_list:\n            cmds.setAttr(sub_obj + \".overrideEnabled\", color[0])\n            cmds.setAttr(sub_obj + \".overrideColor\", color[1])\n        if color_outliner:\n            cmds.setAttr(obj + \".useOutlinerColor\", False)\n\n\nsel = cmds.ls(sl=True)\ncolor_obj(sel, Color.DEFAULT) if sel else cmds.error(\"Please select a nurbsCurve or a joint.\", n=True)\n" 
+        -command "\"\"\"\nThis script applies a color to the selected joint or curve.\nUsage:\n    select the joint or curve transform and run the script.\n\"\"\"\n__author__ = \"R" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
