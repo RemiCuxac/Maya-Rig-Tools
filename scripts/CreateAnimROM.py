@@ -3,7 +3,7 @@ This script allows user to create a range of motion on a selected joint and its 
 Usage:
     Select one joint and run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.cmds as cmds
 

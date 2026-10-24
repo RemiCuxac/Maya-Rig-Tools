@@ -3,7 +3,7 @@ This script updates any constraint after moving the constrained object.
 Usage:
     move any constrained object, then run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

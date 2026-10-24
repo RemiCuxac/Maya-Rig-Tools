@@ -3,7 +3,7 @@ This script helps to replace any curve by another one, without breaking connecti
 Usage:
     select the curve you want to be replaced, then the curve you want to replace from, and run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.cmds as cmds
 

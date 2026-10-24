@@ -5,7 +5,7 @@ If nothing selected, it creates the locator at origin.
 Usage:
     Select an object and execute the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

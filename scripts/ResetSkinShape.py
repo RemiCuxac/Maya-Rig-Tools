@@ -4,7 +4,7 @@ The skin will be updated.
 Usage:
     Select a skinned geo and execute the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

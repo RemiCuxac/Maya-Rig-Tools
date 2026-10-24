@@ -3,7 +3,7 @@ This script helps user to freeze transform the joint even if it has a skin attac
 Usage:
     Select an object (joint or any transform) and execute the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.api.OpenMaya as om
 from maya import cmds

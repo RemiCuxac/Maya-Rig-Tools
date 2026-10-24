@@ -4,7 +4,7 @@ So you can select a controller, a joint, a geo, and it will apply the right bind
 Usage:
     Select a controller / joint / geo and execute the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import math
 

@@ -5,7 +5,7 @@ Also, it will prevent any suspicious error of naming in the newly created list o
 Usage:
     select a root joint to mirror, and run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

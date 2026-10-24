@@ -1,7 +1,7 @@
 """
 This script create a slider that will be useful for face rigging.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from enum import Enum, auto
 

@@ -3,7 +3,7 @@ This script converts any kind of selection to a curve. It works on full mesh, nu
 Usage:
     select any edge(s), or objects and run the script. It will create a new curve named "curve_obj1".
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.cmds as cmds
 

@@ -4,7 +4,7 @@ Both geos have to have the same vertex ID / count.
 Usage:
     select the geom transform you want to be updated, then another geo that has the same vertex ID / count and run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

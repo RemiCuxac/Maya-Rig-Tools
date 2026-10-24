@@ -3,7 +3,7 @@ This script duplicates the selected joints without the hierarchy and parent unpa
 Usage:
     select one or more joints and execute the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

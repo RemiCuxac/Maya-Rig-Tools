@@ -1,7 +1,7 @@
 """
 This script creates a helper object that looks like Local Rotation Axis.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

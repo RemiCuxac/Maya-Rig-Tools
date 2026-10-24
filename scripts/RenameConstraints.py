@@ -4,7 +4,7 @@ And update all attributes of the constraint to be up to date.
 Usage:
     Execute the script. No selection needed.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.cmds as cmds
 

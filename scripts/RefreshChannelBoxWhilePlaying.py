@@ -4,7 +4,7 @@ It's very useful for a demoreel.
 Usage:
     run the script to play your animation.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 import time
 
 import maya.cmds as cmds

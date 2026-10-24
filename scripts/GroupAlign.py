@@ -3,7 +3,7 @@ This script creates a parent group to each object in the selection.
 Usage:
     select one or more object and run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

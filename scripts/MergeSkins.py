@@ -4,7 +4,7 @@ Usage:
     select the geo that has multiple skin, then the duplicated geo with a default skin cluster, and run the script.
     the second one should have the same vertex count / ID than the first one, and the same amount of joints in the skin.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.cmds as cmds
 

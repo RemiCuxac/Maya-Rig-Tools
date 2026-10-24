@@ -5,7 +5,7 @@ It will also parent the curve under the first object selected.
 Usage:
     Select two transforms or controllers and run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

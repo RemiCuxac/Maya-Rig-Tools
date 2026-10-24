@@ -3,7 +3,7 @@ This script transfer any translation / rotation / scale to the parent group if a
 Usage:
     select the controller you want to reset transforms, and run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

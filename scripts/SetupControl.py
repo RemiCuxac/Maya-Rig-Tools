@@ -3,7 +3,7 @@ This script creates a controller, his parent group and the constraint to the sel
 Usage:
     Select the joint you want to constrain and setup, then run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.cmds as cmds
 

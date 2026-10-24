@@ -5,7 +5,7 @@ Usage:
     Select any transform (curve, geo, joint, whatever) and run the script.
 """
 
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 from maya import cmds
 

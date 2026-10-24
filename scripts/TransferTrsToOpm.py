@@ -3,7 +3,7 @@ This script bakes all the transformation to the offsetParentMatrix attribute, so
 Usage:
     Select an object and execute the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds

@@ -4,7 +4,7 @@ Useful to send an animation to a game engine that deosn't supports joint orients
 Usage:
     select the joint then run the script.
 """
-__author__ = "Rémi CUXAC"
+__author__ = "Remi CUXAC"
 
 import maya.api.OpenMaya as om
 from maya import cmds
