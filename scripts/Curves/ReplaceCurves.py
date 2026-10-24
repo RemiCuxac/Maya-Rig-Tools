@@ -21,13 +21,16 @@ def replace_curves(curve_list: list):
         return
     sourceShapes = cmds.listRelatives(source, shapes=True, fullPath=True)
     targetShapes = cmds.listRelatives(target, shapes=True, fullPath=True)
+
+    cmds.makeIdentity(source, apply=True, t=False, r=True, s=True)
+
     for shape in sourceShapes:
-        cmds.parent(shape, target, r=True, s=True)
+        cmds.parent(shape, target, r=True, s=True)  # change r=False if you don't want to move the source shape to the target
     for shape in targetShapes:
         cmds.delete(shape)
     if not cmds.listRelatives(source, allDescendents=True, type="transform"):
         cmds.delete(source)
-    cmds.select(None)
+    cmds.select(target)
 
 
 sel = cmds.ls(sl=1)
