@@ -498,7 +498,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
@@ -650,7 +650,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -676,7 +676,7 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script export the skin inside a json file, to be imported further.\nUsage:\n    Select one or more geos and execute the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef get_skin_cluster(obj):\n    return cmds.ls(cmds.findDeformers(obj), type=\"skinCluster\")\n\n\ndef check_naming():\n    skel = cmds.ls(type=\"joint\")\n    list_errors = [bone.split(\"|\")[-1] for bone in skel if \"|\" in bone]\n    list_errors = list(set(list_errors))\n    if list_errors:\n        message = \"The followings bones has the same name than another bone :\\n\"\n        for bone in list_errors:\n            message += f\"\\n{bone}\"\n        cmds.confirmDialog(title=\"Problem\", message=message, button=\"OK\")\n        return False\n    return True\n\n\ndef export_selected_skins(pGeoList):\n    if not check_naming():\n        return\n\n    folder = cmds.fileDialog2(dialogStyle=1, fileMode=3)\n    folder = folder[0] if folder else None\n    for geo in pGeoList:\n        skin_deformer = get_skin_cluster(geo)\n        if skin_deformer:\n            cmds.deformerWeights(geo + \".json\", format=\"JSON\", path=folder, export=True,\n                                 deformer=str(skin_deformer[0]))\n        else:\n            cmds.confirmDialog(title=\"Problem\", message=f\"No skin cluster applied to {geo}. Export aborted.\",\n                               button=\"OK\")\n            return\n    cmds.confirmDialog(title=\"Good\", message=\"Done !\", button=\"OK\")\n\n\nsel = cmds.ls(sl=1, type=\"transform\")\nexport_selected_skins(sel) if sel else cmds.error(\"Please select at least one geo\", n=True)\n" 
+        -command "\"\"\"\nThis script export the skin inside a json file, to be imported further.\nUsage:\n    Select one or more geos and execute the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef get_skin_cluster(obj):\n    return cmds.ls(cmds.findDeformers(obj), type=\"skinCluster\")\n\n\ndef check_naming():\n    skel = cmds.ls(type=\"joint\")\n    list_errors = [bone.split(\"|\")[-1] for bone in skel if \"|\" in bone]\n    list_errors = list(set(list_errors))\n    if list_errors:\n        message = \"The followings bones has the same name than another bone :\\n\"\n        for bone in list_errors:\n            message += f\"\\n{bone}\"\n        cmds.confirmDialog(title=\"Problem\", message=message, button=\"OK\")\n        return False\n    return True\n\n\ndef export_selected_skins(pGeoList):\n    if not check_naming():\n        return\n\n    folder = cmds.fileDialog2(dialogStyle=1, fileMode=3)\n    folder = folder[0] if folder else None\n    for geo in pGeoList:\n        skin_deformer = get_skin_cluster(geo)\n        if skin_deformer:\n            cmds.deformerWeights(geo + \".json\", format=\"JSON\", path=folder, export=True,\n                                 deformer=str(skin_deformer[0]))\n        else:\n            cmds.confirmDialog(title=\"Problem\", message=f\"No skin cluster applied to {geo}. Export aborted.\",\n                               button=\"OK\")\n            return\n    cmds.confirmDialog(title=\"Good\", message=\"Done !\", button=\"OK\")\n\n\ndef get_geos_from_sel(pSelection):\n    geos = []\n    for obj in pSelection:\n        hierarchy = cmds.listRelatives(obj, type=\"transform\", allDescendents=True) or []\n        hierarchy.append(obj)\n        for children in hierarchy:\n            if cmds.listRelatives(children, shapes=True, fullPath=True):\n                if children not in geos:\n                    geos.append(children)\n    return geos\n\n\nsel = cmds.ls(sl=1, type=\"transform\")\nexport_selected_skins(get_geos_from_sel(sel)) if sel else cmds.error(\"Please select at least one geo\", n=True)\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -876,7 +876,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 32
+        -flexibleWidthValue 64
         -enable 1
         -width 35
         -height 34
