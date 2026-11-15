@@ -44,13 +44,13 @@ def rename_constraints(const_list, rename_attrs: bool = True, rename_const: bool
             # rename the constraint
             new_name = ""
             suffix = f"{driven}_{const_type}"
-            for k in range(len(drivers)):
-                if not new_name:
-                    new_name = drivers[k]
-                else:
-                    new_name = f"{drivers[k]}__{new_name}"
-            full_name = f"{new_name}__{suffix}"
-            cmds.rename(const, full_name)
+            # for k in range(len(drivers)):
+            #     if not new_name:
+            #         new_name = drivers[k]
+            #     else:
+            #         new_name = f"{drivers[k]}__{new_name}"
+            # full_name = f"{new_name}__{suffix}"
+            cmds.rename(const, suffix)
 
 
 sel = cmds.ls(sl=False, type="constraint")
