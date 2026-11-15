@@ -498,14 +498,14 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "Returns the skeleton to the position where its bind pose was set.\nCould work for\n -geo \n -joint \n -controller" 
+        -annotation "Returns the skeleton to the position where its bind pose was set.\nCan work for\n -geo \n -joint \n -controller" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
@@ -808,40 +808,6 @@ global proc shelf_Rigging_Custom () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "Convert selected edges or mesh to curves" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Create curve from selection" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "polyEdgeToCurves.png" 
-        -image1 "polyEdgeToCurves.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "\"\"\"\nThis script converts any kind of selection to a curve. It works on full mesh, nurbsSurface and even on edge selection.\nUsage:\n    select any edge(s), or objects and run the script. It will create a new curve named \"curve_obj1\".\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef get_all_nurbs_isoparms(n):\n    u = [f\"{n}.u[{i}]\" for i in range(cmds.getAttr(n + \".spansU\") + 1)]\n    v = [f\"{n}.v[{i}]\" for i in range(cmds.getAttr(n + \".spansV\") + 1)]\n    return u + v\n\n\ndef edges_to_single_curve(sel_list: list):\n    all_main_curves = []\n    edges = []\n    for elem in sel_list:\n        if \".e\" in elem:\n            if \":\" in elem:\n                edges += cmds.ls(elem, flatten=True)\n                continue\n            edges += [elem]\n            continue\n        shape: list = cmds.listRelatives(elem, shapes=True)\n        assert len(shape) == 1, f\"Error for getting {elem}\"\n        if cmds.nodeType(shape) == \"mesh\":\n            edges += cmds.ls(elem + \".e[*]\", fl=True)\n        elif cmds.nodeType(shape) == \"nurbsSurface\":\n            edges = get_all_nurbs_isoparms(shape)\n\n    main_curve = None\n    for i, edge in enumerate(edges):\n        try:\n            if cmds.nodeType(edge) == \"mesh\":\n                curves = cmds.polyToCurve(edge, form=2, degree=1, ch=False)\n            else:\n                curves = cmds.duplicateCurve(edge, ch=False, local=True)\n            if i == 0:\n                # first one becomes the main curve transform\n                main_curve = curves[0]\n            else:\n                # parent shape node under main curve\n                shape_nodes = cmds.listRelatives(curves[0], shapes=True, f=True) or []\n                cmds.parent(shape_nodes, main_curve, shape=True, r=True)\n                # delete the extra transform\n                cmds.delete(curves[0])\n        except Exception as e:\n            cmds.warning(\"Failed to convert edge {}: {}\".format(edge, e))\n    if main_curve:\n        if cmds.listRelatives(main_curve, parent=True):\n            main_curve = cmds.parent(main_curve, world=True)\n        main_curve = cmds.rename(main_curve, \"curve_obj1\")\n        # cmds.matchTransform(main_curve, shape,pivots=True)\n        all_main_curves.append(main_curve)\n    cmds.select(all_main_curves)\n\n\nsel = cmds.ls(sl=True)\nedges_to_single_curve(sel) if sel else cmds.error(\"Please select an object.\", n=True)\n" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 3
-        -flexibleWidthValue 64
-        -enable 1
-        -width 35
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
         -annotation "Increase curve thickness" 
         -enableBackground 0
         -backgroundColor 0 0 0 
@@ -910,7 +876,7 @@ global proc shelf_Rigging_Custom () {
     shelfButton
         -enableCommandRepeat 1
         -flexibleWidthType 3
-        -flexibleWidthValue 64
+        -flexibleWidthValue 32
         -enable 1
         -width 35
         -height 34
@@ -937,45 +903,16 @@ global proc shelf_Rigging_Custom () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "\"\"\"\nThis script creates a controller, his parent group and the constraint to the selected joint.\nUsage:\n    Select the joint you want to constrain and setup, then run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.parentConstraint(newCtrl, bone, maintainOffset=True)\n        # if parent:\n        #     cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" 
+        -command "\"\"\"\nThis script creates a controller, his parent group and the constraint to the selected joint.\nUsage:\n    Select the joint you want to constrain and setup, then run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        # cmds.parentConstraint(newCtrl, bone, maintainOffset=True)\n        # if parent:\n        #     cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 3
-        -flexibleWidthValue 32
-        -enable 1
-        -width 35
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Reset the offset of the constraint on (move your object, then select your object or the constraint, and execute)." 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Update Constraint" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -font "plainLabelFont" 
-        -imageOverlayLabel "Const" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0.255 0.255 0.255 0.5 
-        -image "menuIconReset.png" 
-        -image1 "menuIconReset.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "\"\"\"\nThis script updates any constraint after moving the constrained object.\nUsage:\n    move any constrained object, then run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nfrom maya import cmds\n\n\ndef update_offset_constraint(obj_list):\n    if not obj_list: cmds.warning(\"Please select an constrained object or the constraint you want to update.\");return\n    constraint = list(set(cmds.ls(cmds.listConnections(obj_list, destination=False), type=\"constraint\")))\n    if not constraint: cmds.warning(\n        \"No constraint applied to the object. Please select a another constrained objet or constraint.\");return\n    for const in constraint:\n        const_type = cmds.nodeType(const)\n        function = getattr(cmds, const_type)\n        driver_list = function(const, q=True, targetList=True)\n        if not driver_list: cmds.warning(\"The constraint is driven by nothing.\");return\n        weight_list = function(driver_list, obj_list, q=True, w=True)\n        weight_list = weight_list if isinstance(weight_list, list) else [weight_list]\n        for driver, weight in zip(driver_list, weight_list):\n            function(driver, obj_list, e=True, maintainOffset=True, w=weight)\n\n\nsel = cmds.ls(sl=1)\nupdate_offset_constraint(sel)\n" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
+        -mi "Setup with parent const" ( "\"\"\"\nThis script creates a controller, his parent group and the constraint to the selected joint.\nUsage:\n    Select the joint you want to constrain and setup, then run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.parentConstraint(newCtrl, bone, maintainOffset=True)\n        # if parent:\n        #     cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" )
+        -mip 0
+        -mi "Setup with orient const" ( "\"\"\"\nThis script creates a controller, his parent group and the constraint to the selected joint.\nUsage:\n    Select the joint you want to constrain and setup, then run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.orientConstraint(newCtrl, bone, maintainOffset=True)\n        # if parent:\n        #     cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" )
+        -mip 1
+        -mi "Setup with point const" ( "\"\"\"\nThis script creates a controller, his parent group and the constraint to the selected joint.\nUsage:\n    Select the joint you want to constrain and setup, then run the script.\n\"\"\"\n__author__ = \"Remi CUXAC\"\n\nimport maya.cmds as cmds\n\n\ndef create_control(pObjList: list):\n    for bone in pObjList:\n        parent = cmds.listRelatives(bone, parent=True, type=\"transform\")\n        # Create controls and groups\n        controlName = bone.replace(\"jnt\", \"ctrl\").replace(\"joint\", \"ctrl\")\n        controlName = \"ctrl_\" + controlName if \"ctrl_\" not in controlName else controlName\n        newCtrl = cmds.circle(name=controlName, normal=(1, 0, 0), radius=5)\n        newGrp = cmds.group(newCtrl, name=controlName.replace(\"ctrl\", \"grp\"))\n        cmds.matchTransform(newGrp, bone)\n\n        # Create constraint\n        cmds.pointConstraint(newCtrl, bone, maintainOffset=True)\n        # if parent:\n        #     cmds.parentConstraint(parent, newGrp, maintainOffset=True)\n    cmds.inViewMessage(amg=\"<hl>Don't forget to parent newly created groups</hl>.\", pos='midCenter', fade=True)\n\n\nsel = cmds.ls(selection=True)\ncreate_control(sel) if sel else cmds.error(\"Please select at least one object to control.\", n=True)\n" )
+        -mip 2
     ;
     separator
         -enable 1
